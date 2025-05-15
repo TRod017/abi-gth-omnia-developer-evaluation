@@ -1,8 +1,12 @@
 ﻿namespace Ambev.DeveloperEvaluation.Application.Products.GetProduct;
 
 /// <summary>
-/// Represents the response returned after successfully retrieving a product.
+/// Represents the response model returned after successfully retrieving a product by its ID.
 /// </summary>
+/// <remarks>
+/// This DTO contains the detailed product information retrieved from the database,
+/// including its ID, name, description, unit price, and available quantity in stock.
+/// </remarks>
 public class GetProductResult
 {
     /// <summary>

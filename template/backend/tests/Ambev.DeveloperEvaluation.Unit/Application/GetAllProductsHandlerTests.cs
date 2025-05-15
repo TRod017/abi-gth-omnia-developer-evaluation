@@ -1,9 +1,11 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Products.GetAllProducts;
+using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Unit.Application.TestData;
 using AutoMapper;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
 
@@ -16,13 +18,15 @@ public class GetAllProductsHandlerTests
 {
     private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
+    private readonly ILogger<GetAllProductsHandler> _logger;
     private readonly GetAllProductsHandler _handler;
 
     public GetAllProductsHandlerTests()
     {
         _productRepository = Substitute.For<IProductRepository>();
         _mapper = Substitute.For<IMapper>();
-        _handler = new GetAllProductsHandler(_productRepository, _mapper);
+        _logger = Substitute.For<ILogger<GetAllProductsHandler>>();
+        _handler = new GetAllProductsHandler(_productRepository, _mapper, _logger);
     }
 
     [Fact(DisplayName = "When handling request Then should return all mapped products")]

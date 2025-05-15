@@ -1,8 +1,12 @@
 ﻿namespace Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
 
 /// <summary>
-/// Represents the response returned after successfully updating a product.
+/// Represents the response model returned after successfully updating a product.
 /// </summary>
+/// <remarks>
+/// This DTO contains the unique identifier of the updated product, typically used
+/// to confirm the update operation and reference the product in subsequent actions.
+/// </remarks>
 public class UpdateProductResult
 {
     /// <summary>

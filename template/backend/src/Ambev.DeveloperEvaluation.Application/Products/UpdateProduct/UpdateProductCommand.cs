@@ -37,6 +37,13 @@ public class UpdateProductCommand : IRequest<UpdateProductResult>
     /// </summary>
     public int AvailableQuantity { get; set; }
 
+    /// <summary>
+    /// Validates the command using <see cref="UpdateProductValidator"/>.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="ValidationResultDetail"/> containing validation results such as
+    /// success flag and detailed error messages, if any.
+    /// </returns>
     public ValidationResultDetail Validate()
     {
         var validator = new UpdateProductValidator();

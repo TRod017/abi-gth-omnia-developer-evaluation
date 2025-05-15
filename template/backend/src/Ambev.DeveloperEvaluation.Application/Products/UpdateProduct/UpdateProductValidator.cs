@@ -3,12 +3,19 @@
 namespace Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
 
 /// <summary>
-/// Validator for UpdateProductCommand that defines validation rules for updating a product.
+/// Validator for <see cref="UpdateProductCommand"/> that defines validation rules for updating a product.
 /// </summary>
+/// <remarks>
+/// Ensures that all required fields for a product update are present and valid, including:
+/// - Product ID must not be empty
+/// - Name and description must not be empty
+/// - Unit price and available quantity must be greater than or equal to zero
+/// </remarks>
 public class UpdateProductValidator : AbstractValidator<UpdateProductCommand>
 {
     /// <summary>
-    /// Initializes a new instance of the UpdateProductValidator with defined validation rules.
+    /// Initializes a new instance of the <see cref="UpdateProductValidator"/> class
+    /// and sets up validation rules for product updates.
     /// </summary>
     public UpdateProductValidator()
     {

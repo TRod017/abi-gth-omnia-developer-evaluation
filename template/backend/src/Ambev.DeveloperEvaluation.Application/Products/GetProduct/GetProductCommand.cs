@@ -17,6 +17,13 @@ public class GetProductCommand : IRequest<GetProductResult>
     /// </summary>
     public Guid Id { get; set; }
 
+    /// <summary>
+    /// Validates the command using <see cref="GetProductValidator"/>.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="ValidationResultDetail"/> containing validation results such as
+    /// success flag and detailed error messages, if any.
+    /// </returns>
     public ValidationResultDetail Validate()
     {
         var validator = new GetProductValidator();

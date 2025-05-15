@@ -1,48 +1,93 @@
 ﻿using AutoMapper;
 using MediatR;
 using FluentValidation;
-using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 
 /// <summary>
-/// Handler for processing CreateProductCommand requests.
+/// Handler responsible for processing <see cref="CreateProductCommand"/> requests.
 /// </summary>
+/// <remarks>
+/// This handler validates the incoming product creation command using <see cref="CreateProductValidator"/>,
+/// maps the command to a <see cref="Product"/> entity using <see cref="IMapper"/>,
+/// persists it using <see cref="IProductRepository"/>, and logs each step of the operation
+/// using <see cref="ILogger"/>. Returns a <see cref="CreateProductResult"/> upon successful creation.
+/// </remarks>
 public class CreateProductHandler : IRequestHandler<CreateProductCommand, CreateProductResult>
 {
-    private readonly IProductRepository _productRepository;
+    private readonly IProductRepository _repository;
     private readonly IMapper _mapper;
+    private readonly ILogger<CreateProductHandler> _logger;
+
+    private static readonly Action<ILogger, string, Exception?> _logStart =
+        LoggerMessage.Define<string>(
+            LogLevel.Information,
+            new EventId(2000, nameof(Handle)),
+            "Handling CreateProductCommand for Name: {Name}");
+
+    private static readonly Action<ILogger, Guid, Exception?> _logCreated =
+        LoggerMessage.Define<Guid>(
+            LogLevel.Information,
+            new EventId(2001, nameof(Handle)),
+            "Product created with ID: {ProductId}");
+
+    private static readonly Action<ILogger, Exception?> _logUnexpectedError =
+        LoggerMessage.Define(
+            LogLevel.Error,
+            new EventId(2500, nameof(Handle)),
+            "Unexpected error occurred while handling CreateProductCommand");
 
     /// <summary>
-    /// Initializes a new instance of the CreateProductHandler class.
+    /// Initializes a new instance of the <see cref="CreateProductHandler"/> class.
     /// </summary>
-    /// <param name="productRepository">The product repository instance.</param>
-    /// <param name="mapper">The AutoMapper instance.</param>
-    public CreateProductHandler(IProductRepository productRepository, IMapper mapper)
+    /// <param name="repository">The product repository for persistence operations.</param>
+    /// <param name="mapper">The AutoMapper instance used for object mapping.</param>
+    /// <param name="logger">The logger used to log operational steps.</param>
+    public CreateProductHandler(IProductRepository repository, IMapper mapper, ILogger<CreateProductHandler> logger)
     {
-        _productRepository = productRepository;
+        _repository = repository;
         _mapper = mapper;
+        _logger = logger;
     }
 
     /// <summary>
-    /// Handles the CreateProductCommand request.
+    /// Handles the <see cref="CreateProductCommand"/> request and returns the created product result.
     /// </summary>
-    /// <param name="command">The command containing the product details to create.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>The created product result.</returns>
+    /// <param name="command">The command containing the product data to be created.</param>
+    /// <param name="cancellationToken">Cancellation token for async operation.</param>
+    /// <returns>The result of the created product as <see cref="CreateProductResult"/>.</returns>
     public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
+        _logStart(_logger, command.Name, null);
+
         var validator = new CreateProductValidator();
-        var validationResult = await validator.ValidateAsync(command, cancellationToken);
+        var validation = await validator.ValidateAsync(command, cancellationToken);
 
-        if (!validationResult.IsValid)
-            throw new ValidationException(validationResult.Errors);
+        if (!validation.IsValid)
+        {
+            _logger.LogWarning(new EventId(2002, nameof(Handle)), "Validation failed for CreateProductCommand. Errors: {@Errors}", validation.Errors);
+            throw new ValidationException(validation.Errors);
+        }
 
-        var product = _mapper.Map<Product>(command);
+        try
+        {
+            var product = _mapper.Map<Product>(command);
 
-        var createdProduct = await _productRepository.CreateAsync(product, cancellationToken);
-        var result = _mapper.Map<CreateProductResult>(createdProduct);
-        return result;
+            _logger.LogDebug("Mapped CreateProductCommand to Product entity: {@Product}", product);
+
+            var created = await _repository.CreateAsync(product, cancellationToken);
+
+            _logCreated(_logger, created.Id, null);
+
+            return _mapper.Map<CreateProductResult>(created);
+        }
+        catch (Exception ex)
+        {
+            _logUnexpectedError(_logger, ex);
+            throw;
+        }
     }
 }

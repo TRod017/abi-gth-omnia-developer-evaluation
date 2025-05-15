@@ -12,6 +12,7 @@ using Ambev.DeveloperEvaluation.Application.Products.GetProduct;
 using Ambev.DeveloperEvaluation.Application.Products.DeleteProduct;
 using Ambev.DeveloperEvaluation.Application.Products.GetAllProducts;
 using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
+using Microsoft.Extensions.Logging;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Products;
 
@@ -24,11 +25,13 @@ public class ProductsController : BaseController
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly ILogger<ProductsController> _logger;
 
-    public ProductsController(IMediator mediator, IMapper mapper)
+    public ProductsController(IMediator mediator, IMapper mapper, ILogger<ProductsController> logger)
     {
         _mediator = mediator;
         _mapper = mapper;
+        _logger = logger;
     }
 
     /// <summary>
@@ -39,14 +42,21 @@ public class ProductsController : BaseController
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateProductRequest request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Received request to create a new product");
+
         var validator = new CreateProductRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Create product request validation failed: {@Errors}", validationResult.Errors);
             return BadRequest(validationResult.Errors);
+        }
 
         var command = _mapper.Map<CreateProductCommand>(request);
         var result = await _mediator.Send(command, cancellationToken);
+
+        _logger.LogInformation("Product created successfully with ID: {ProductId}", result.Id);
 
         return Created(string.Empty, new ApiResponseWithData<CreateProductResponse>
         {
@@ -65,15 +75,32 @@ public class ProductsController : BaseController
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Received request to retrieve product with ID: {ProductId}", id);
+
         var request = new GetProductRequest { Id = id };
         var validator = new GetProductRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Get product request validation failed for ID: {ProductId}", id);
             return BadRequest(validationResult.Errors);
+        }
 
         var command = _mapper.Map<GetProductCommand>(request.Id);
         var result = await _mediator.Send(command, cancellationToken);
+
+        if (result == null)
+        {
+            _logger.LogWarning("Product not found with ID: {ProductId}", id);
+            return NotFound(new ApiResponse
+            {
+                Success = false,
+                Message = $"Product with ID {id} not found"
+            });
+        }
+
+        _logger.LogInformation("Product retrieved successfully with ID: {ProductId}", id);
 
         return Ok(new ApiResponseWithData<GetProductResponse>
         {
@@ -90,7 +117,12 @@ public class ProductsController : BaseController
     [ProducesResponseType(typeof(ApiResponseWithData<IEnumerable<GetAllProductsResponse>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Received request to retrieve all products");
+
         var result = await _mediator.Send(new GetAllProductsCommand(), cancellationToken);
+
+        _logger.LogInformation("Retrieved {Count} products", result.Count);
+
         return Ok(new ApiResponseWithData<IEnumerable<GetAllProductsResponse>>
         {
             Success = true,
@@ -107,16 +139,32 @@ public class ProductsController : BaseController
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateProductRequest request, CancellationToken cancellationToken)
     {
-        request.Id = id;
+        _logger.LogInformation("Received request to update product with ID: {ProductId}", id);
 
+        request.Id = id;
         var validator = new UpdateProductRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Update product request validation failed for ID: {ProductId}", id);
             return BadRequest(validationResult.Errors);
+        }
 
         var command = _mapper.Map<UpdateProductCommand>(request);
         var result = await _mediator.Send(command, cancellationToken);
+
+        if (result == null)
+        {
+            _logger.LogWarning("Product not found to update with ID: {ProductId}", id);
+            return NotFound(new ApiResponse
+            {
+                Success = false,
+                Message = $"Product with ID {id} not found"
+            });
+        }
+
+        _logger.LogInformation("Product updated successfully with ID: {ProductId}", result.Id);
 
         return Ok(new ApiResponseWithData<UpdateProductResponse>
         {
@@ -134,15 +182,32 @@ public class ProductsController : BaseController
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Received request to delete product with ID: {ProductId}", id);
+
         var request = new DeleteProductRequest { Id = id };
         var validator = new DeleteProductRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Delete product request validation failed for ID: {ProductId}", id);
             return BadRequest(validationResult.Errors);
+        }
 
         var command = _mapper.Map<DeleteProductCommand>(request.Id);
-        await _mediator.Send(command, cancellationToken);
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (!result)
+        {
+            _logger.LogWarning("Product not found to delete with ID: {ProductId}", id);
+            return NotFound(new ApiResponse
+            {
+                Success = false,
+                Message = $"Product with ID {id} not found"
+            });
+        }
+
+        _logger.LogInformation("Product deleted successfully with ID: {ProductId}", id);
 
         return Ok(new ApiResponse
         {
