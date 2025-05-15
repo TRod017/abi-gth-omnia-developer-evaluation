@@ -10,7 +10,7 @@ namespace Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 /// This command is used to encapsulate the necessary information for creating a new product,
 /// including name, description, unit price, and available quantity. It implements <see cref="IRequest{TResponse}"/>
 /// to return a <see cref="CreateProductResult"/> upon execution. The input data is validated through
-/// the <see cref="CreateProductCommandValidator"/> class.
+/// the <see cref="CreateProductValidator"/> class.
 /// </remarks>
 public class CreateProductCommand : IRequest<CreateProductResult>
 {
@@ -36,7 +36,7 @@ public class CreateProductCommand : IRequest<CreateProductResult>
 
     public ValidationResultDetail Validate()
     {
-        var validator = new CreateProductCommandValidator();
+        var validator = new CreateProductValidator();
         var result = validator.Validate(this);
         return new ValidationResultDetail
         {

@@ -5,12 +5,12 @@ namespace Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 /// <summary>
 /// Validator for CreateProductCommand that defines validation rules for product creation.
 /// </summary>
-public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
+public class CreateProductValidator : AbstractValidator<CreateProductCommand>
 {
     /// <summary>
     /// Initializes a new instance of the CreateProductCommandValidator with defined validation rules.
     /// </summary>
-    public CreateProductCommandValidator()
+    public CreateProductValidator()
     {
         RuleFor(p => p.Name)
             .NotEmpty()

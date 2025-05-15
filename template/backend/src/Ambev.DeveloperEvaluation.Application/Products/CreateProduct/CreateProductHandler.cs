@@ -33,7 +33,7 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Create
     /// <returns>The created product result.</returns>
     public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
-        var validator = new CreateProductCommandValidator();
+        var validator = new CreateProductValidator();
         var validationResult = await validator.ValidateAsync(command, cancellationToken);
 
         if (!validationResult.IsValid)
