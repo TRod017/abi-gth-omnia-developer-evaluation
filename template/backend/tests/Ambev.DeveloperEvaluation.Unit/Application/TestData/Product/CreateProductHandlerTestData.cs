@@ -1,7 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 using Bogus;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.TestData;
+namespace Ambev.DeveloperEvaluation.Unit.Application.TestData.Product;
 
 /// <summary>
 /// Provides methods to generate test data for CreateProductHandler tests.

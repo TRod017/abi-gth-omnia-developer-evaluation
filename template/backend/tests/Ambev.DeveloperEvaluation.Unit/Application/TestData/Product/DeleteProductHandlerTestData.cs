@@ -1,7 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Products.DeleteProduct;
 using Bogus;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.TestData;
+namespace Ambev.DeveloperEvaluation.Unit.Application.TestData.Product;
 
 /// <summary>
 /// Provides test data for DeleteProductHandler unit tests.

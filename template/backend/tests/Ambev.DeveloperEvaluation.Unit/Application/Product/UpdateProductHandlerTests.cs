@@ -1,7 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
-using Ambev.DeveloperEvaluation.Unit.Application.TestData;
+using Ambev.DeveloperEvaluation.Unit.Application.TestData.Product;
 using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -32,7 +32,7 @@ public class UpdateProductHandlerTests
     public async Task Handle_ValidCommand_ReturnsUpdatedResult()
     {
         // Arrange
-        var command = UpdateProductHandlerTestData.GenerateValidCommand();
+        var command = UpdateCartHandlerTestData.GenerateValidCommand();
         var existingProduct = new Product
         {
             Id = command.Id,
@@ -84,7 +84,7 @@ public class UpdateProductHandlerTests
     public async Task Handle_NonExistingProduct_ThrowsKeyNotFoundException()
     {
         // Arrange
-        var command = UpdateProductHandlerTestData.GenerateValidCommand();
+        var command = UpdateCartHandlerTestData.GenerateValidCommand();
         _productRepository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>()).Returns((Product?)null);
 
         // Act
@@ -98,7 +98,7 @@ public class UpdateProductHandlerTests
     public async Task Handle_ValidCommand_MapsCommandToEntity()
     {
         // Arrange
-        var command = UpdateProductHandlerTestData.GenerateValidCommand();
+        var command = UpdateCartHandlerTestData.GenerateValidCommand();
         var existingProduct = new Product { Id = command.Id };
 
         _productRepository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>()).Returns(existingProduct);

@@ -1,4 +1,6 @@
-﻿namespace Ambev.DeveloperEvaluation.Application.Carts.GetAllCarts;
+﻿using Ambev.DeveloperEvaluation.Domain.Enums;
+
+namespace Ambev.DeveloperEvaluation.Application.Carts.GetAllCarts;
 
 /// <summary>
 /// Represents the result of a cart item returned in the list of all carts.
@@ -7,7 +9,7 @@ public class GetAllCartsResult
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
-    public string Status { get; set; } = string.Empty;
+    public CartStatus Status { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }

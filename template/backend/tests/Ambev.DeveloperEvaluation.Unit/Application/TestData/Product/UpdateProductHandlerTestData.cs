@@ -1,12 +1,12 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
 using Bogus;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.TestData;
+namespace Ambev.DeveloperEvaluation.Unit.Application.TestData.Product;
 
 /// <summary>
 /// Provides methods to generate test data for UpdateProductHandler tests.
 /// </summary>
-public static class UpdateProductHandlerTestData
+public static class UpdateCartHandlerTestData
 {
     private static readonly Faker<UpdateProductCommand> faker = new Faker<UpdateProductCommand>()
         .RuleFor(p => p.Id, f => Guid.NewGuid())

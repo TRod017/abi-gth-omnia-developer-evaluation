@@ -1,8 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Products.GetAllProducts;
-using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
-using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
-using Ambev.DeveloperEvaluation.Unit.Application.TestData;
+using Ambev.DeveloperEvaluation.Unit.Application.TestData.Product;
 using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -33,7 +31,7 @@ public class GetAllProductsHandlerTests
     public async Task Handle_WhenCalled_ReturnsAllProducts()
     {
         // Arrange
-        var products = GetAllProductsHandlerTestData.GenerateProducts();
+        var products = GetAllCartsHandlerTestData.GenerateProducts();
         var results = products.Select(p => new GetAllProductsResult
         {
             Id = p.Id,

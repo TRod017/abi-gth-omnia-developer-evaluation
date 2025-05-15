@@ -1,7 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Products.DeleteProduct;
 using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
-using Ambev.DeveloperEvaluation.Unit.Application.TestData;
+using Ambev.DeveloperEvaluation.Unit.Application.TestData.Product;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
