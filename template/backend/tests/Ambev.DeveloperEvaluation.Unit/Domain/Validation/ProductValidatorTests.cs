@@ -6,94 +6,92 @@ using Xunit;
 namespace Ambev.DeveloperEvaluation.Unit.Domain.Validation;
 
 /// <summary>
-/// Contains unit tests for the ProductValidator class.
-/// Validates rules for name, description, price, and quantity.
+/// Unit tests for the ProductValidator class.
 /// </summary>
 public class ProductValidatorTests
 {
     private readonly ProductValidator _validator = new();
 
-    [Fact(DisplayName = "Valid product should pass all validation rules")]
+    [Fact(DisplayName = "Product with valid data should pass validation")]
     public void Given_ValidProduct_When_Validated_Then_ShouldNotHaveErrors()
+    {
+        // Arrange
+        var product = new Product
+        {
+            Name = "Teclado Mecânico",
+            Description = "Switch azul com RGB",
+            UnitPrice = 249.90m,
+            AvailableQuantity = 25
+        };
+
+        // Act
+        var result = _validator.TestValidate(product);
+
+        // Assert
+        result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [Theory(DisplayName = "Invalid product name should fail validation")]
+    [InlineData("")]
+    [InlineData(null)]
+    public void Given_InvalidName_When_Validated_Then_ShouldHaveError(string name)
     {
         var product = new Product
         {
-            Name = "Notebook",
-            Description = "Dell i7 16GB",
-            UnitPrice = 4999.90m,
+            Name = name!,
+            Description = "Descrição válida",
+            UnitPrice = 100.0m,
             AvailableQuantity = 10
         };
 
         var result = _validator.TestValidate(product);
-
-        result.ShouldNotHaveAnyValidationErrors();
-    }
-
-    [Theory(DisplayName = "Empty or null name should fail validation")]
-    [InlineData("")]
-    [InlineData(null)]
-    public void Given_EmptyName_When_Validated_Then_ShouldHaveError(string? name)
-    {
-        var product = new Product
-        {
-            Name = name ?? string.Empty,
-            Description = "Desc",
-            UnitPrice = 100,
-            AvailableQuantity = 1
-        };
-
-        var result = _validator.TestValidate(product);
-
         result.ShouldHaveValidationErrorFor(p => p.Name);
     }
 
-    [Theory(DisplayName = "Empty or null description should fail validation")]
+    [Theory(DisplayName = "Invalid product description should fail validation")]
     [InlineData("")]
     [InlineData(null)]
-    public void Given_EmptyDescription_When_Validated_Then_ShouldHaveError(string? desc)
+    public void Given_InvalidDescription_When_Validated_Then_ShouldHaveError(string description)
     {
         var product = new Product
         {
-            Name = "Valid Name",
-            Description = desc ?? string.Empty,
-            UnitPrice = 100,
-            AvailableQuantity = 1
+            Name = "Produto válido",
+            Description = description!,
+            UnitPrice = 100.0m,
+            AvailableQuantity = 10
         };
 
         var result = _validator.TestValidate(product);
-
         result.ShouldHaveValidationErrorFor(p => p.Description);
     }
 
-    [Fact(DisplayName = "Negative price should fail validation")]
-    public void Given_NegativePrice_When_Validated_Then_ShouldHaveError()
+    [Fact(DisplayName = "Negative unit price should fail validation")]
+    public void Given_NegativeUnitPrice_When_Validated_Then_ShouldHaveError()
     {
         var product = new Product
         {
-            Name = "Name",
-            Description = "Desc",
-            UnitPrice = -1,
-            AvailableQuantity = 1
+            Name = "Produto válido",
+            Description = "Descrição válida",
+            UnitPrice = -1m,
+            AvailableQuantity = 10
         };
 
         var result = _validator.TestValidate(product);
-
         result.ShouldHaveValidationErrorFor(p => p.UnitPrice);
     }
 
     [Fact(DisplayName = "Negative quantity should fail validation")]
-    public void Given_NegativeQuantity_When_Validated_Then_ShouldHaveError()
+    public void Given_NegativeAvailableQuantity_When_Validated_Then_ShouldHaveError()
     {
         var product = new Product
         {
-            Name = "Name",
-            Description = "Desc",
-            UnitPrice = 10,
+            Name = "Produto válido",
+            Description = "Descrição válida",
+            UnitPrice = 99.99m,
             AvailableQuantity = -5
         };
 
         var result = _validator.TestValidate(product);
-
         result.ShouldHaveValidationErrorFor(p => p.AvailableQuantity);
     }
 }
