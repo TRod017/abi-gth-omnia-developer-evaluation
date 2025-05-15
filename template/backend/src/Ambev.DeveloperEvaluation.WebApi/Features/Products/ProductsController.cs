@@ -17,8 +17,13 @@ using Microsoft.Extensions.Logging;
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Products;
 
 /// <summary>
-/// Controller for managing product operations
+/// API controller responsible for handling all product-related operations.
 /// </summary>
+/// <remarks>
+/// Provides endpoints for creating, retrieving, updating, and deleting products.
+/// Integrates with the application layer via <see cref="IMediator"/> and utilizes
+/// <see cref="AutoMapper"/> and <see cref="ILogger"/> for mapping and logging respectively.
+/// </remarks>
 [ApiController]
 [Route("api/[controller]")]
 public class ProductsController : BaseController
@@ -27,6 +32,12 @@ public class ProductsController : BaseController
     private readonly IMapper _mapper;
     private readonly ILogger<ProductsController> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ProductsController"/> class.
+    /// </summary>
+    /// <param name="mediator">Mediator instance for command/query dispatch.</param>
+    /// <param name="mapper">AutoMapper instance for DTO conversions.</param>
+    /// <param name="logger">Logger instance for structured logging.</param>
     public ProductsController(IMediator mediator, IMapper mapper, ILogger<ProductsController> logger)
     {
         _mediator = mediator;
@@ -35,8 +46,11 @@ public class ProductsController : BaseController
     }
 
     /// <summary>
-    /// Creates a new product
+    /// Creates a new product.
     /// </summary>
+    /// <param name="request">The product creation payload.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>A response with the created product ID.</returns>
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponseWithData<CreateProductResponse>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -67,8 +81,11 @@ public class ProductsController : BaseController
     }
 
     /// <summary>
-    /// Retrieves a product by ID
+    /// Retrieves a product by its ID.
     /// </summary>
+    /// <param name="id">The ID of the product to retrieve.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>The product details if found.</returns>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(ApiResponseWithData<GetProductResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -111,8 +128,10 @@ public class ProductsController : BaseController
     }
 
     /// <summary>
-    /// Retrieves all products
+    /// Retrieves all products.
     /// </summary>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>A list of all products.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(ApiResponseWithData<IEnumerable<GetAllProductsResponse>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
@@ -132,8 +151,12 @@ public class ProductsController : BaseController
     }
 
     /// <summary>
-    /// Updates a product
+    /// Updates an existing product.
     /// </summary>
+    /// <param name="id">The ID of the product to update.</param>
+    /// <param name="request">The updated product information.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>The updated product information if successful.</returns>
     [HttpPut("{id}")]
     [ProducesResponseType(typeof(ApiResponseWithData<UpdateProductResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -175,8 +198,11 @@ public class ProductsController : BaseController
     }
 
     /// <summary>
-    /// Deletes a product by ID
+    /// Deletes a product by its ID.
     /// </summary>
+    /// <param name="id">The ID of the product to delete.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>A response indicating whether the deletion was successful.</returns>
     [HttpDelete("{id}")]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]

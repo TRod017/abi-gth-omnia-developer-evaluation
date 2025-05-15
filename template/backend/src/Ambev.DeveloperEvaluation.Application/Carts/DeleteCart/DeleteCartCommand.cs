@@ -7,7 +7,8 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.DeleteCart;
 /// Command to delete a cart by its unique identifier.
 /// </summary>
 /// <remarks>
-/// This command encapsulates the ID of the cart to be deleted.
+/// This command is used to request the deletion of a cart.
+/// It returns a boolean indicating the success of the operation.
 /// </remarks>
 public class DeleteCartCommand : IRequest<bool>
 {
@@ -17,8 +18,12 @@ public class DeleteCartCommand : IRequest<bool>
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Validates the command input.
+    /// Validates the command using <see cref="DeleteCartValidator"/>.
     /// </summary>
+    /// <returns>
+    /// A <see cref="ValidationResultDetail"/> containing validation results such as
+    /// success flag and detailed error messages, if any.
+    /// </returns>
     public ValidationResultDetail Validate()
     {
         var validator = new DeleteCartValidator();

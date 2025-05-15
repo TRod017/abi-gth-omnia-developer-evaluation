@@ -10,8 +10,10 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.GetCart;
 /// Handler responsible for processing <see cref="GetCartCommand"/> requests.
 /// </summary>
 /// <remarks>
-/// This handler validates the command, fetches the cart from the repository,
-/// and maps it to a <see cref="GetCartResult"/>. It logs each step for observability.
+/// This handler validates the incoming cart query using <see cref="GetCartValidator"/>.
+/// It then attempts to retrieve the cart by its ID using <see cref="ICartRepository"/>.
+/// If found, the cart is mapped to a <see cref="GetCartResult"/> using <see cref="IMapper"/>.
+/// Logs are recorded throughout the process using <see cref="ILogger"/> for observability and diagnostics.
 /// </remarks>
 public class GetCartHandler : IRequestHandler<GetCartCommand, GetCartResult>
 {
@@ -19,6 +21,12 @@ public class GetCartHandler : IRequestHandler<GetCartCommand, GetCartResult>
     private readonly IMapper _mapper;
     private readonly ILogger<GetCartHandler> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GetCartHandler"/> class.
+    /// </summary>
+    /// <param name="repository">The cart repository instance.</param>
+    /// <param name="mapper">The AutoMapper instance.</param>
+    /// <param name="logger">The logger instance.</param>
     public GetCartHandler(ICartRepository repository, IMapper mapper, ILogger<GetCartHandler> logger)
     {
         _repository = repository;
@@ -26,6 +34,12 @@ public class GetCartHandler : IRequestHandler<GetCartCommand, GetCartResult>
         _logger = logger;
     }
 
+    /// <summary>
+    /// Handles the <see cref="GetCartCommand"/> request.
+    /// </summary>
+    /// <param name="command">The command containing the cart ID to retrieve.</param>
+    /// <param name="cancellationToken">Cancellation token for the async operation.</param>
+    /// <returns>The retrieved cart details as <see cref="GetCartResult"/>.</returns>
     public async Task<GetCartResult> Handle(GetCartCommand command, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Handling GetCartCommand for Cart ID: {CartId}", command.Id);

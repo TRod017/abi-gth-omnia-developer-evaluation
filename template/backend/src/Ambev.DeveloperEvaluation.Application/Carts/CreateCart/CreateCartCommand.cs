@@ -9,8 +9,10 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
 /// Command for creating a new cart with optional items and user association.
 /// </summary>
 /// <remarks>
-/// This command encapsulates the information required to create a cart,
-/// including the user ID and a collection of cart items.
+/// This command is used to encapsulate the necessary information for creating a new cart,
+/// including the user ID and a collection of cart items. It implements <see cref="IRequest{TResponse}"/>
+/// to return a <see cref="CreateCartResult"/> upon execution. The input data is validated through
+/// the <see cref="CreateCartValidator"/> class.
 /// </remarks>
 public class CreateCartCommand : IRequest<CreateCartResult>
 {
@@ -24,6 +26,13 @@ public class CreateCartCommand : IRequest<CreateCartResult>
     /// </summary>
     public List<CreateCartItemCommand> Items { get; set; } = new();
 
+    /// <summary>
+    /// Validates the current command using <see cref="CreateCartValidator"/>.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="ValidationResultDetail"/> containing validation results such as
+    /// success flag and detailed error messages, if any.
+    /// </returns>
     public ValidationResultDetail Validate()
     {
         var validator = new CreateCartValidator();

@@ -12,8 +12,9 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
 /// </summary>
 /// <remarks>
 /// This handler validates the incoming cart creation command using <see cref="CreateCartValidator"/>.
-/// It maps the command to a <see cref="Cart"/> entity, persists it using <see cref="ICartRepository"/>.
-/// and logs the operation using <see cref="ILogger"/>. Returns a <see cref="CreateCartResult"/> on success.
+/// It maps the command to a <see cref="Cart"/> entity using <see cref="IMapper"/>,
+/// persists it using <see cref="ICartRepository"/>, and logs each step of the operation
+/// using <see cref="ILogger"/>. Returns a <see cref="CreateCartResult"/> upon successful creation.
 /// </remarks>
 public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartResult>
 {
@@ -24,6 +25,9 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartRe
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateCartHandler"/> class.
     /// </summary>
+    /// <param name="repository">The cart repository for persistence operations.</param>
+    /// <param name="mapper">The AutoMapper instance used for object mapping.</param>
+    /// <param name="logger">The logger used to log operational steps.</param>
     public CreateCartHandler(ICartRepository repository, IMapper mapper, ILogger<CreateCartHandler> logger)
     {
         _repository = repository;
@@ -31,7 +35,12 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartRe
         _logger = logger;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Handles the <see cref="CreateCartCommand"/> request and returns the created cart result.
+    /// </summary>
+    /// <param name="command">The command containing the cart data to be created.</param>
+    /// <param name="cancellationToken">Cancellation token for async operation.</param>
+    /// <returns>The result of the created cart as <see cref="CreateCartResult"/>.</returns>
     public async Task<CreateCartResult> Handle(CreateCartCommand command, CancellationToken cancellationToken)
     {
         _logger.LogInformation(new EventId(1001, nameof(CreateCartHandler)), "Handling CreateCartCommand for UserId: {UserId}", command.UserId);

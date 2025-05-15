@@ -4,9 +4,13 @@ using FluentValidation;
 namespace Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
 
 /// <summary>
-/// Validator for <see cref="CreateCartCommand"/> that ensures required fields are populated
-/// and each cart item is valid.
+/// Validator for <see cref="CreateCartCommand"/> that defines validation rules for cart creation.
 /// </summary>
+/// <remarks>
+/// This validator ensures that all required fields are provided and meet the business constraints:
+/// - <c>UserId</c> must not be empty.
+/// - Each item in <c>Items</c> must be valid according to <see cref="CreateCartItemValidator"/>.
+/// </remarks>
 public class CreateCartValidator : AbstractValidator<CreateCartCommand>
 {
     /// <summary>

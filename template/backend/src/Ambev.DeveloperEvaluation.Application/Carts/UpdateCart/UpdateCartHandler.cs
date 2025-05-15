@@ -8,14 +8,26 @@ using Ambev.DeveloperEvaluation.Domain.Repositories;
 namespace Ambev.DeveloperEvaluation.Application.Carts.UpdateCart;
 
 /// <summary>
-/// Handler for processing <see cref="UpdateCartCommand"/> requests.
+/// Handler responsible for processing <see cref="UpdateCartCommand"/> requests.
 /// </summary>
+/// <remarks>
+/// This handler validates the update command using <see cref="UpdateCartValidator"/>.
+/// It retrieves the existing cart from the repository, applies updates using <see cref="IMapper"/>,
+/// persists the changes, and logs each step using <see cref="ILogger"/>. 
+/// Returns <see cref="UpdateCartResult"/> upon successful update or throws exceptions in case of errors.
+/// </remarks>
 public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, UpdateCartResult>
 {
     private readonly ICartRepository _repository;
     private readonly IMapper _mapper;
     private readonly ILogger<UpdateCartHandler> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateCartHandler"/> class.
+    /// </summary>
+    /// <param name="repository">The cart repository instance.</param>
+    /// <param name="mapper">The AutoMapper instance.</param>
+    /// <param name="logger">The logger instance.</param>
     public UpdateCartHandler(ICartRepository repository, IMapper mapper, ILogger<UpdateCartHandler> logger)
     {
         _repository = repository;
@@ -23,6 +35,12 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, UpdateCartRe
         _logger = logger;
     }
 
+    /// <summary>
+    /// Handles the <see cref="UpdateCartCommand"/> request and returns the updated cart.
+    /// </summary>
+    /// <param name="command">The command containing updated cart information.</param>
+    /// <param name="cancellationToken">Cancellation token for the async operation.</param>
+    /// <returns>The updated cart result as <see cref="UpdateCartResult"/>.</returns>
     public async Task<UpdateCartResult> Handle(UpdateCartCommand command, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Handling UpdateCartCommand for Cart ID: {CartId}", command.Id);

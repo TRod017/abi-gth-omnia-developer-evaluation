@@ -9,8 +9,10 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.DeleteCart;
 /// Handler responsible for processing <see cref="DeleteCartCommand"/> requests.
 /// </summary>
 /// <remarks>
-/// This handler validates the command, attempts to delete the cart by ID using the <see cref="ICartRepository"/>.
-/// Logs key steps and returns true if successful, or false otherwise.
+/// This handler validates the incoming delete command using <see cref="DeleteCartValidator"/>,
+/// attempts to delete the cart from the repository using <see cref="ICartRepository"/>,
+/// and logs the operation using <see cref="ILogger"/>. Returns <c>true</c> if the deletion is successful,
+/// or <c>false</c> if the cart was not found.
 /// </remarks>
 public class DeleteCartHandler : IRequestHandler<DeleteCartCommand, bool>
 {
@@ -20,6 +22,8 @@ public class DeleteCartHandler : IRequestHandler<DeleteCartCommand, bool>
     /// <summary>
     /// Initializes a new instance of the <see cref="DeleteCartHandler"/> class.
     /// </summary>
+    /// <param name="repository">The cart repository instance.</param>
+    /// <param name="logger">The logger instance.</param>
     public DeleteCartHandler(ICartRepository repository, ILogger<DeleteCartHandler> logger)
     {
         _repository = repository;
@@ -29,6 +33,9 @@ public class DeleteCartHandler : IRequestHandler<DeleteCartCommand, bool>
     /// <summary>
     /// Handles the <see cref="DeleteCartCommand"/> request.
     /// </summary>
+    /// <param name="command">The command containing the cart ID to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>True if the cart was successfully deleted; otherwise, false.</returns>
     public async Task<bool> Handle(DeleteCartCommand command, CancellationToken cancellationToken)
     {
         try

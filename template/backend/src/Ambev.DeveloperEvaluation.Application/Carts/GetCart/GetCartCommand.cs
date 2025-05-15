@@ -4,8 +4,12 @@ using MediatR;
 namespace Ambev.DeveloperEvaluation.Application.Carts.GetCart;
 
 /// <summary>
-/// Command to retrieve a cart by its unique identifier.
+/// Query to retrieve a cart by its unique identifier.
 /// </summary>
+/// <remarks>
+/// This command is used to encapsulate the ID required to retrieve
+/// a specific cart. It returns a <see cref="GetCartResult"/> upon execution.
+/// </remarks>
 public class GetCartCommand : IRequest<GetCartResult>
 {
     /// <summary>
@@ -13,6 +17,13 @@ public class GetCartCommand : IRequest<GetCartResult>
     /// </summary>
     public Guid Id { get; set; }
 
+    /// <summary>
+    /// Validates the command using <see cref="GetCartValidator"/>.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="ValidationResultDetail"/> containing validation results such as
+    /// success flag and detailed error messages, if any.
+    /// </returns>
     public ValidationResultDetail Validate()
     {
         var validator = new GetCartValidator();
