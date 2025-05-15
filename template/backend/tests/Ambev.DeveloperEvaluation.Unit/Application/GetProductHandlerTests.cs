@@ -1,9 +1,11 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Products.GetProduct;
+using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Unit.Application.TestData;
 using AutoMapper;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
 
@@ -16,13 +18,15 @@ public class GetProductHandlerTests
 {
     private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
+    private readonly ILogger<GetProductHandler> _logger;
     private readonly GetProductHandler _handler;
 
     public GetProductHandlerTests()
     {
         _productRepository = Substitute.For<IProductRepository>();
         _mapper = Substitute.For<IMapper>();
-        _handler = new GetProductHandler(_productRepository, _mapper);
+        _logger = Substitute.For<ILogger<GetProductHandler>>();
+        _handler = new GetProductHandler(_productRepository, _mapper, _logger);
     }
 
     [Fact(DisplayName = "Given valid command When handling Then should return product data")]

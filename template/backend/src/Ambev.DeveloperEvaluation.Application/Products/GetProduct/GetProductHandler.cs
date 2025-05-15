@@ -1,48 +1,97 @@
 ﻿using AutoMapper;
 using MediatR;
-using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.GetProduct;
 
 /// <summary>
-/// Handler for processing GetProductCommand requests.
+/// Handler for processing <see cref="GetProductCommand"/> requests.
 /// </summary>
-public class GetProductHandler : IRequestHandler<GetProductCommand, GetProductResult>
+/// <remarks>
+/// This handler retrieves a product by its ID using <see cref="IProductRepository"/>.
+/// If the product is found, it is mapped to <see cref="GetProductResult"/> and returned.
+/// If not found, a null response is returned. Logging is used throughout the process
+/// via <see cref="ILogger"/>.
+/// </remarks>
+public class GetProductHandler : IRequestHandler<GetProductCommand, GetProductResult?>
 {
-    private readonly IProductRepository _productRepository;
+    private readonly IProductRepository _repository;
     private readonly IMapper _mapper;
+    private readonly ILogger<GetProductHandler> _logger;
+
+    // EventIds
+    private static readonly EventId FetchingProductEvent = new(3101, nameof(FetchingProductEvent));
+    private static readonly EventId ProductFoundEvent = new(3102, nameof(ProductFoundEvent));
+    private static readonly EventId ProductNotFoundEvent = new(3103, nameof(ProductNotFoundEvent));
+    private static readonly EventId GetProductErrorEvent = new(3199, nameof(GetProductErrorEvent));
+
+    // LoggerMessage definitions
+    private static readonly Action<ILogger, Guid, Exception?> LogFetchingProduct =
+        LoggerMessage.Define<Guid>(
+            LogLevel.Information,
+            FetchingProductEvent,
+            "Fetching product with ID: {ProductId}");
+
+    private static readonly Action<ILogger, Guid, Exception?> LogProductFound =
+        LoggerMessage.Define<Guid>(
+            LogLevel.Information,
+            ProductFoundEvent,
+            "Product with ID {ProductId} found");
+
+    private static readonly Action<ILogger, Guid, Exception?> LogProductNotFound =
+        LoggerMessage.Define<Guid>(
+            LogLevel.Warning,
+            ProductNotFoundEvent,
+            "Product with ID {ProductId} not found");
+
+    private static readonly Action<ILogger, Exception> LogUnexpectedError =
+        LoggerMessage.Define(
+            LogLevel.Error,
+            GetProductErrorEvent,
+            "Unexpected error while retrieving product");
 
     /// <summary>
-    /// Initializes a new instance of the GetProductHandler class.
+    /// Initializes a new instance of the <see cref="GetProductHandler"/> class.
     /// </summary>
-    /// <param name="productRepository">The product repository instance.</param>
+    /// <param name="repository">The product repository instance.</param>
     /// <param name="mapper">The AutoMapper instance.</param>
-    public GetProductHandler(IProductRepository productRepository, IMapper mapper)
+    /// <param name="logger">The logger instance.</param>
+    public GetProductHandler(IProductRepository repository, IMapper mapper, ILogger<GetProductHandler> logger)
     {
-        _productRepository = productRepository;
+        _repository = repository;
         _mapper = mapper;
+        _logger = logger;
     }
 
     /// <summary>
-    /// Handles the GetProductCommand request.
+    /// Handles the <see cref="GetProductCommand"/> request.
     /// </summary>
     /// <param name="command">The command containing the product ID to retrieve.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>The retrieved product details.</returns>
-    public async Task<GetProductResult> Handle(GetProductCommand command, CancellationToken cancellationToken)
+    /// <returns>The retrieved product details, or null if not found.</returns>
+    public async Task<GetProductResult?> Handle(GetProductCommand command, CancellationToken cancellationToken)
     {
-        var validator = new GetProductValidator();
-        var validationResult = await validator.ValidateAsync(command, cancellationToken);
+        try
+        {
+            LogFetchingProduct(_logger, command.Id, null);
 
-        if (!validationResult.IsValid)
-            throw new ValidationException(validationResult.Errors);
+            var product = await _repository.GetByIdAsync(command.Id, cancellationToken);
 
-        var product = await _productRepository.GetByIdAsync(command.Id, cancellationToken);
+            if (product == null)
+            {
+                LogProductNotFound(_logger, command.Id, null);
+                return null;
+            }
 
-        if (product == null)
-            throw new KeyNotFoundException($"Product with ID {command.Id} was not found.");
+            LogProductFound(_logger, command.Id, null);
 
-        return _mapper.Map<GetProductResult>(product);
+            return _mapper.Map<GetProductResult>(product);
+        }
+        catch (Exception ex)
+        {
+            LogUnexpectedError(_logger, ex);
+            throw;
+        }
     }
 }

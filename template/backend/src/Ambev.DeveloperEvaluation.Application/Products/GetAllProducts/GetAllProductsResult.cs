@@ -1,8 +1,12 @@
 ﻿namespace Ambev.DeveloperEvaluation.Application.Products.GetAllProducts;
 
 /// <summary>
-/// Represents the response returned for each product in a product list.
+/// Represents the response model returned for each product in the GetAllProducts operation.
 /// </summary>
+/// <remarks>
+/// This DTO is used to expose selected product fields in product listing endpoints,
+/// including identification, name, description, price, and quantity available in stock.
+/// </remarks>
 public class GetAllProductsResult
 {
     /// <summary>

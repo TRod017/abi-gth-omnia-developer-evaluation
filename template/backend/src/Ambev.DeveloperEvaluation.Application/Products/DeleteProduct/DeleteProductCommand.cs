@@ -17,6 +17,13 @@ public class DeleteProductCommand : IRequest<bool>
     /// </summary>
     public Guid Id { get; set; }
 
+    /// <summary>
+    /// Validates the command using <see cref="DeleteProductValidator"/>.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="ValidationResultDetail"/> containing validation results such as
+    /// success flag and detailed error messages, if any.
+    /// </returns>
     public ValidationResultDetail Validate()
     {
         var validator = new DeleteProductValidator();

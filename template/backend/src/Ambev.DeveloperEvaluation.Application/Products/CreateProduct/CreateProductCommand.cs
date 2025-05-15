@@ -34,6 +34,13 @@ public class CreateProductCommand : IRequest<CreateProductResult>
     /// </summary>
     public int AvailableQuantity { get; set; }
 
+    /// <summary>
+    /// Validates the current command using <see cref="CreateProductValidator"/>.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="ValidationResultDetail"/> containing validation results such as
+    /// success flag and detailed error messages, if any.
+    /// </returns>
     public ValidationResultDetail Validate()
     {
         var validator = new CreateProductValidator();
