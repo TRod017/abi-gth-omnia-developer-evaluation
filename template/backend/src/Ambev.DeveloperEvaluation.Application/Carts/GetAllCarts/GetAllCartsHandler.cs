@@ -19,6 +19,30 @@ public class GetAllCartsHandler : IRequestHandler<GetAllCartsCommand, IReadOnlyC
     private readonly IMapper _mapper;
     private readonly ILogger<GetAllCartsHandler> _logger;
 
+    // EventIds
+    private static readonly EventId RetrievingAllCartsEvent = new(3101, nameof(RetrievingAllCartsEvent));
+    private static readonly EventId RetrievedCartsEvent = new(3102, nameof(RetrievedCartsEvent));
+    private static readonly EventId GetAllCartsErrorEvent = new(3199, nameof(GetAllCartsErrorEvent));
+
+    // LoggerMessage definitions
+    private static readonly Action<ILogger, Exception?> LogRetrievingAllCarts =
+        LoggerMessage.Define(
+            LogLevel.Information,
+            RetrievingAllCartsEvent,
+            "Retrieving all carts");
+
+    private static readonly Action<ILogger, int, Exception?> LogRetrievedCarts =
+        LoggerMessage.Define<int>(
+            LogLevel.Information,
+            RetrievedCartsEvent,
+            "Retrieved {Count} carts");
+
+    private static readonly Action<ILogger, Exception> LogUnexpectedError =
+        LoggerMessage.Define(
+            LogLevel.Error,
+            GetAllCartsErrorEvent,
+            "Unexpected error while retrieving carts");
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GetAllCartsHandler"/> class.
     /// </summary>
@@ -42,17 +66,17 @@ public class GetAllCartsHandler : IRequestHandler<GetAllCartsCommand, IReadOnlyC
     {
         try
         {
-            _logger.LogInformation("Retrieving all carts from repository");
+            LogRetrievingAllCarts(_logger, null);
 
             var carts = await _repository.GetAllAsync(cancellationToken);
 
-            _logger.LogInformation("Retrieved {Count} carts", carts.Count);
+            LogRetrievedCarts(_logger, carts.Count, null);
 
             return _mapper.Map<IReadOnlyCollection<GetAllCartsResult>>(carts);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An unexpected error occurred while retrieving all carts");
+            LogUnexpectedError(_logger, ex);
             throw;
         }
     }

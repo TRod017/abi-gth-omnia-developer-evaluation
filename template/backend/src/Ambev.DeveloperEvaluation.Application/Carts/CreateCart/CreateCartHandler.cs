@@ -22,6 +22,42 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartRe
     private readonly IMapper _mapper;
     private readonly ILogger<CreateCartHandler> _logger;
 
+    private static readonly EventId HandlingEvent = new(1001, nameof(CreateCartHandler));
+    private static readonly EventId MappingEvent = new(1002, "Mapping");
+    private static readonly EventId PersistenceEvent = new(1003, "Persistence");
+    private static readonly EventId ValidationErrorEvent = new(1400, "ValidationError");
+    private static readonly EventId UnhandledExceptionEvent = new(1500, "UnhandledException");
+
+    private static readonly Action<ILogger, Guid, Exception?> LogHandling =
+        LoggerMessage.Define<Guid>(
+            LogLevel.Information,
+            HandlingEvent,
+            "Handling CreateCartCommand for UserId: {UserId}");
+
+    private static readonly Action<ILogger, object, Exception?> LogValidationFailed =
+        LoggerMessage.Define<object>(
+            LogLevel.Warning,
+            ValidationErrorEvent,
+            "Validation failed for CreateCartCommand. Errors: {@Errors}");
+
+    private static readonly Action<ILogger, object, Exception?> LogMapped =
+        LoggerMessage.Define<object>(
+            LogLevel.Debug,
+            MappingEvent,
+            "Mapped CreateCartCommand to Cart entity: {@Cart}");
+
+    private static readonly Action<ILogger, Guid, Exception?> LogCreated =
+        LoggerMessage.Define<Guid>(
+            LogLevel.Information,
+            PersistenceEvent,
+            "Cart created with ID: {CartId}");
+
+    private static readonly Action<ILogger, Guid, Exception> LogUnhandled =
+        LoggerMessage.Define<Guid>(
+            LogLevel.Critical,
+            UnhandledExceptionEvent,
+            "Unhandled exception occurred while creating cart for UserId: {UserId}");
+
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateCartHandler"/> class.
     /// </summary>
@@ -43,14 +79,14 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartRe
     /// <returns>The result of the created cart as <see cref="CreateCartResult"/>.</returns>
     public async Task<CreateCartResult> Handle(CreateCartCommand command, CancellationToken cancellationToken)
     {
-        _logger.LogInformation(new EventId(1001, nameof(CreateCartHandler)), "Handling CreateCartCommand for UserId: {UserId}", command.UserId);
+        LogHandling(_logger, command.UserId, null);
 
         var validator = new CreateCartValidator();
         var validation = await validator.ValidateAsync(command, cancellationToken);
 
         if (!validation.IsValid)
         {
-            _logger.LogWarning(new EventId(1400, "ValidationError"), "Validation failed for CreateCartCommand. Errors: {@Errors}", validation.Errors);
+            LogValidationFailed(_logger, validation.Errors, null);
             throw new ValidationException(validation.Errors);
         }
 
@@ -58,17 +94,17 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartRe
         {
             var cart = _mapper.Map<Cart>(command);
 
-            _logger.LogDebug(new EventId(1002, "Mapping"), "Mapped CreateCartCommand to Cart entity: {@Cart}", cart);
+            LogMapped(_logger, cart, null);
 
             var created = await _repository.CreateAsync(cart, cancellationToken);
 
-            _logger.LogInformation(new EventId(1003, "Persistence"), "Cart created with ID: {CartId}", created.Id);
+            LogCreated(_logger, created.Id, null);
 
             return _mapper.Map<CreateCartResult>(created);
         }
         catch (Exception ex)
         {
-            _logger.LogCritical(new EventId(1500, "UnhandledException"), ex, "Unhandled exception occurred while creating cart for UserId: {UserId}", command.UserId);
+            LogUnhandled(_logger, command.UserId, ex);
             throw;
         }
     }

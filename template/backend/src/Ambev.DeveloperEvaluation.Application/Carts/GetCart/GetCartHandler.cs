@@ -21,6 +21,44 @@ public class GetCartHandler : IRequestHandler<GetCartCommand, GetCartResult>
     private readonly IMapper _mapper;
     private readonly ILogger<GetCartHandler> _logger;
 
+    // EventIds
+    private static readonly EventId FetchingCartEvent = new(3201, nameof(FetchingCartEvent));
+    private static readonly EventId ValidationErrorEvent = new(3202, nameof(ValidationErrorEvent));
+    private static readonly EventId CartFoundEvent = new(3203, nameof(CartFoundEvent));
+    private static readonly EventId CartNotFoundEvent = new(3204, nameof(CartNotFoundEvent));
+    private static readonly EventId GetCartErrorEvent = new(3299, nameof(GetCartErrorEvent));
+
+    // LoggerMessage definitions
+    private static readonly Action<ILogger, Guid, Exception?> LogFetchingCart =
+        LoggerMessage.Define<Guid>(
+            LogLevel.Information,
+            FetchingCartEvent,
+            "Handling GetCartCommand for Cart ID: {CartId}");
+
+    private static readonly Action<ILogger, object, Exception?> LogValidationFailed =
+        LoggerMessage.Define<object>(
+            LogLevel.Warning,
+            ValidationErrorEvent,
+            "Validation failed for GetCartCommand. Errors: {@Errors}");
+
+    private static readonly Action<ILogger, Guid, Exception?> LogCartFound =
+        LoggerMessage.Define<Guid>(
+            LogLevel.Information,
+            CartFoundEvent,
+            "Cart with ID {CartId} retrieved successfully");
+
+    private static readonly Action<ILogger, Guid, Exception?> LogCartNotFound =
+        LoggerMessage.Define<Guid>(
+            LogLevel.Warning,
+            CartNotFoundEvent,
+            "Cart with ID {CartId} not found");
+
+    private static readonly Action<ILogger, Guid, Exception> LogUnexpectedError =
+        LoggerMessage.Define<Guid>(
+            LogLevel.Error,
+            GetCartErrorEvent,
+            "Unexpected error occurred while handling GetCartCommand for ID: {CartId}");
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GetCartHandler"/> class.
     /// </summary>
@@ -42,16 +80,16 @@ public class GetCartHandler : IRequestHandler<GetCartCommand, GetCartResult>
     /// <returns>The retrieved cart details as <see cref="GetCartResult"/>.</returns>
     public async Task<GetCartResult> Handle(GetCartCommand command, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Handling GetCartCommand for Cart ID: {CartId}", command.Id);
-
         try
         {
+            LogFetchingCart(_logger, command.Id, null);
+
             var validator = new GetCartValidator();
             var validation = await validator.ValidateAsync(command, cancellationToken);
 
             if (!validation.IsValid)
             {
-                _logger.LogWarning("Validation failed for GetCartCommand. Errors: {@Errors}", validation.Errors);
+                LogValidationFailed(_logger, validation.Errors, null);
                 throw new ValidationException(validation.Errors);
             }
 
@@ -59,17 +97,17 @@ public class GetCartHandler : IRequestHandler<GetCartCommand, GetCartResult>
 
             if (cart == null)
             {
-                _logger.LogWarning("Cart with ID {CartId} not found", command.Id);
+                LogCartNotFound(_logger, command.Id, null);
                 throw new KeyNotFoundException($"Cart with ID {command.Id} was not found.");
             }
 
-            _logger.LogInformation("Cart with ID {CartId} retrieved successfully", command.Id);
+            LogCartFound(_logger, command.Id, null);
 
             return _mapper.Map<GetCartResult>(cart);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error occurred while handling GetCartCommand for ID: {CartId}", command.Id);
+            LogUnexpectedError(_logger, command.Id, ex);
             throw;
         }
     }

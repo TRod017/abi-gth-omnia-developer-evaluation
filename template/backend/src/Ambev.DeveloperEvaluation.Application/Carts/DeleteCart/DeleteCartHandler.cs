@@ -9,15 +9,53 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.DeleteCart;
 /// Handler responsible for processing <see cref="DeleteCartCommand"/> requests.
 /// </summary>
 /// <remarks>
-/// This handler validates the incoming delete command using <see cref="DeleteCartValidator"/>,
-/// attempts to delete the cart from the repository using <see cref="ICartRepository"/>,
-/// and logs the operation using <see cref="ILogger"/>. Returns <c>true</c> if the deletion is successful,
+/// This handler validates the incoming delete command using <see cref="DeleteCartValidator"/>.
+/// attempts to delete the cart from the repository using <see cref="ICartRepository"/>.
+/// and logs the operation using <see cref="ILogger"/>. Returns <c>true</c> if the deletion is successful.
 /// or <c>false</c> if the cart was not found.
 /// </remarks>
 public class DeleteCartHandler : IRequestHandler<DeleteCartCommand, bool>
 {
     private readonly ICartRepository _repository;
     private readonly ILogger<DeleteCartHandler> _logger;
+
+    // EventIds
+    private static readonly EventId DeletingCartEvent = new(1101, nameof(DeletingCartEvent));
+    private static readonly EventId ValidationFailedEvent = new(1140, nameof(ValidationFailedEvent));
+    private static readonly EventId CartDeletedEvent = new(1102, nameof(CartDeletedEvent));
+    private static readonly EventId CartNotFoundEvent = new(1103, nameof(CartNotFoundEvent));
+    private static readonly EventId DeleteCartErrorEvent = new(1199, nameof(DeleteCartErrorEvent));
+
+    // LoggerMessage definitions
+    private static readonly Action<ILogger, Guid, Exception?> LogDeletingCart =
+        LoggerMessage.Define<Guid>(
+            LogLevel.Information,
+            DeletingCartEvent,
+            "Handling DeleteCartCommand for ID: {CartId}");
+
+    private static readonly Action<ILogger, object, Exception?> LogValidationFailed =
+        LoggerMessage.Define<object>(
+            LogLevel.Warning,
+            ValidationFailedEvent,
+            "Validation failed for DeleteCartCommand. Errors: {@Errors}");
+
+    private static readonly Action<ILogger, Guid, Exception?> LogCartDeleted =
+        LoggerMessage.Define<Guid>(
+            LogLevel.Information,
+            CartDeletedEvent,
+            "Cart with ID {CartId} deleted successfully");
+
+    private static readonly Action<ILogger, Guid, Exception?> LogCartNotFound =
+        LoggerMessage.Define<Guid>(
+            LogLevel.Warning,
+            CartNotFoundEvent,
+            "Cart with ID {CartId} not found");
+
+    private static readonly Action<ILogger, Guid, Exception> LogUnexpectedError =
+        LoggerMessage.Define<Guid>(
+            LogLevel.Error,
+            DeleteCartErrorEvent,
+            "Unexpected error while deleting cart with ID {CartId}");
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeleteCartHandler"/> class.
@@ -40,29 +78,29 @@ public class DeleteCartHandler : IRequestHandler<DeleteCartCommand, bool>
     {
         try
         {
-            _logger.LogInformation("Handling DeleteCartCommand for ID: {CartId}", command.Id);
+            LogDeletingCart(_logger, command.Id, null);
 
             var validator = new DeleteCartValidator();
             var validation = await validator.ValidateAsync(command, cancellationToken);
 
             if (!validation.IsValid)
             {
-                _logger.LogWarning("Validation failed for DeleteCartCommand. Errors: {@Errors}", validation.Errors);
+                LogValidationFailed(_logger, validation.Errors, null);
                 throw new ValidationException(validation.Errors);
             }
 
             var deleted = await _repository.DeleteAsync(command.Id, cancellationToken);
 
             if (deleted)
-                _logger.LogInformation("Cart with ID {CartId} deleted successfully", command.Id);
+                LogCartDeleted(_logger, command.Id, null);
             else
-                _logger.LogWarning("Cart with ID {CartId} not found", command.Id);
+                LogCartNotFound(_logger, command.Id, null);
 
             return deleted;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error while deleting cart with ID {CartId}", command.Id);
+            LogUnexpectedError(_logger, command.Id, ex);
             throw;
         }
     }
