@@ -1,35 +1,48 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.GetUser;
+using Ambev.DeveloperEvaluation.WebApi.Features.Users.GetAllUsers;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.DeleteUser;
+using Ambev.DeveloperEvaluation.WebApi.Features.Users.UpdateUser;
 using Ambev.DeveloperEvaluation.Application.Users.CreateUser;
 using Ambev.DeveloperEvaluation.Application.Users.GetUser;
+using Ambev.DeveloperEvaluation.Application.Users.GetAllUsers;
 using Ambev.DeveloperEvaluation.Application.Users.DeleteUser;
+using Ambev.DeveloperEvaluation.Application.Users.UpdateUser;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Users;
 
 /// <summary>
-/// Controller for managing user operations
+/// API controller responsible for handling all user-related operations.
 /// </summary>
+/// <remarks>
+/// Provides endpoints for creating, retrieving, updating, and deleting users.
+/// Integrates with the application layer via <see cref="IMediator"/> and utilizes
+/// <see cref="AutoMapper"/> and <see cref="ILogger"/> for mapping and logging respectively.
+/// </remarks>
 [ApiController]
 [Route("api/[controller]")]
 public class UsersController : BaseController
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly ILogger<UsersController> _logger;
 
     /// <summary>
-    /// Initializes a new instance of UsersController
+    /// Initializes a new instance of the <see cref="UsersController"/> class.
     /// </summary>
-    /// <param name="mediator">The mediator instance</param>
-    /// <param name="mapper">The AutoMapper instance</param>
-    public UsersController(IMediator mediator, IMapper mapper)
+    /// <param name="mediator">Mediator instance for command/query dispatch.</param>
+    /// <param name="mapper">AutoMapper instance for DTO conversions.</param>
+    /// <param name="logger">Logger instance for structured logging.</param>
+    public UsersController(IMediator mediator, IMapper mapper, ILogger<UsersController> logger)
     {
         _mediator = mediator;
         _mapper = mapper;
+        _logger = logger;
     }
 
     /// <summary>
@@ -43,14 +56,21 @@ public class UsersController : BaseController
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Received request to create a new user");
+
         var validator = new CreateUserRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Create user request validation failed: {@Errors}", validationResult.Errors);
             return BadRequest(validationResult.Errors);
+        }
 
         var command = _mapper.Map<CreateUserCommand>(request);
         var response = await _mediator.Send(command, cancellationToken);
+
+        _logger.LogInformation("User created successfully with ID: {UserId}", response.Id);
 
         return Created(string.Empty, new ApiResponseWithData<CreateUserResponse>
         {
@@ -72,21 +92,110 @@ public class UsersController : BaseController
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUser([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Received request to retrieve user with ID: {UserId}", id);
+
         var request = new GetUserRequest { Id = id };
         var validator = new GetUserRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Get user request validation failed for ID: {UserId}", id);
             return BadRequest(validationResult.Errors);
+        }
 
         var command = _mapper.Map<GetUserCommand>(request.Id);
         var response = await _mediator.Send(command, cancellationToken);
+
+        if (response == null)
+        {
+            _logger.LogWarning("User not found with ID: {UserId}", id);
+            return NotFound(new ApiResponse
+            {
+                Success = false,
+                Message = $"User with ID {id} not found"
+            });
+        }
+
+        _logger.LogInformation("User retrieved successfully with ID: {UserId}", id);
 
         return Ok(new ApiResponseWithData<GetUserResponse>
         {
             Success = true,
             Message = "User retrieved successfully",
             Data = _mapper.Map<GetUserResponse>(response)
+        });
+    }
+
+    /// <summary>
+    /// Retrieves all users.
+    /// </summary>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>A list of all users.</returns>
+    [HttpGet]
+    [ProducesResponseType(typeof(ApiResponseWithData<IEnumerable<GetAllUsersResponse>>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Received request to retrieve all users");
+
+        var result = await _mediator.Send(new GetAllUsersCommand(), cancellationToken);
+
+        _logger.LogInformation("Retrieved {Count} users", result.Count);
+
+        return Ok(new ApiResponseWithData<IEnumerable<GetAllUsersResponse>>
+        {
+            Success = true,
+            Message = "Users retrieved successfully",
+            Data = _mapper.Map<IEnumerable<GetAllUsersResponse>>(result)
+        });
+    }
+
+    /// <summary>
+    /// Updates an existing user.
+    /// </summary>
+    /// <param name="id">The ID of the user to update.</param>
+    /// <param name="request">The updated user information.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>The updated user information if successful.</returns>
+    [HttpPut("{id}")]
+    [ProducesResponseType(typeof(ApiResponseWithData<UpdateUserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateUserRequest request, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Received request to update user with ID: {UserId}", id);
+
+        request.Id = id;
+
+        var validator = new UpdateUserRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Update user request validation failed for ID: {UserId}", id);
+            return BadRequest(validationResult.Errors);
+        }
+
+        var command = _mapper.Map<UpdateUserCommand>(request);
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (result == null)
+        {
+            _logger.LogWarning("User not found to update with ID: {UserId}", id);
+            return NotFound(new ApiResponse
+            {
+                Success = false,
+                Message = $"User with ID {id} not found"
+            });
+        }
+
+        _logger.LogInformation("User updated successfully with ID: {UserId}", result.Id);
+
+        return Ok(new ApiResponseWithData<UpdateUserResponse>
+        {
+            Success = true,
+            Message = "User updated successfully",
+            Data = _mapper.Map<UpdateUserResponse>(result)
         });
     }
 
@@ -102,15 +211,22 @@ public class UsersController : BaseController
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteUser([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Received request to delete user with ID: {UserId}", id);
+
         var request = new DeleteUserRequest { Id = id };
         var validator = new DeleteUserRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Delete user request validation failed for ID: {UserId}", id);
             return BadRequest(validationResult.Errors);
+        }
 
         var command = _mapper.Map<DeleteUserCommand>(request.Id);
         await _mediator.Send(command, cancellationToken);
+
+        _logger.LogInformation("User deleted successfully with ID: {UserId}", id);
 
         return Ok(new ApiResponse
         {
