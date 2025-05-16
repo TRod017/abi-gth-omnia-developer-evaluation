@@ -55,6 +55,47 @@ public class UserRepository : IUserRepository
         return await _context.Users
             .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
     }
+    
+    /// <summary>
+    /// Retrieves all users from the database
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>A read-only collection of all users</returns>
+    public async Task<IReadOnlyCollection<User>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Users
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
+
+
+    /// <summary>
+    /// Updates an existing user in the database
+    /// </summary>
+    /// <param name="user">The user to update</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The updated user</returns>
+    public async Task<User> UpdateAsync(User user, CancellationToken cancellationToken = default)
+    {
+        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id, cancellationToken);
+
+        if (existingUser == null)
+            throw new KeyNotFoundException($"User with ID {user.Id} not found");
+
+        // Atualiza as propriedades relevantes
+        existingUser.Email = user.Email;
+        existingUser.Username = user.Username;
+        existingUser.Password = user.Password;
+        existingUser.Phone = user.Phone;
+        existingUser.Status = user.Status;
+        existingUser.Role = user.Role;
+
+        _context.Users.Update(existingUser);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return existingUser;
+    }
+
 
     /// <summary>
     /// Deletes a user from the database

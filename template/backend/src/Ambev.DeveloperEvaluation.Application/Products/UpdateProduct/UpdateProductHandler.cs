@@ -63,6 +63,9 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, Update
     /// <summary>
     /// Initializes a new instance of the <see cref="UpdateProductHandler"/> class.
     /// </summary>
+    /// <param name="repository">The product repository instance.</param>
+    /// <param name="mapper">The AutoMapper instance.</param>
+    /// <param name="logger">The logger instance.</param>
     public UpdateProductHandler(IProductRepository repository, IMapper mapper, ILogger<UpdateProductHandler> logger)
     {
         _repository = repository;
@@ -73,6 +76,9 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, Update
     /// <summary>
     /// Handles the <see cref="UpdateProductCommand"/> and returns the updated product.
     /// </summary>
+    /// <param name="command">The command containing updated product information.</param>
+    /// <param name="cancellationToken">Cancellation token for the async operation.</param>
+    /// <returns>The updated product result as <see cref="UpdateProductResult"/>, or null if not found.</returns>
     public async Task<UpdateProductResult?> Handle(UpdateProductCommand command, CancellationToken cancellationToken)
     {
         try
