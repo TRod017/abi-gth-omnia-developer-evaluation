@@ -8,7 +8,6 @@ using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -18,28 +17,15 @@ public class Program
     {
         try
         {
-            Log.Information("Starting web application");
-
             var builder = WebApplication.CreateBuilder(args);
-
-            // Configura Serilog como provedor de logging do ASP.NET Core
-            builder.Host.UseSerilog((context, services, configuration) =>
-            {
-                configuration
-                    .ReadFrom.Configuration(context.Configuration)
-                    .ReadFrom.Services(services)
-                    .Enrich.FromLogContext()
-                    .WriteTo.Console()
-                    .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day);
-            });
 
             builder.AddDefaultLogging();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
 
-            builder.AddBasicHealthChecks();
             builder.Services.AddSwaggerGen();
+            builder.AddBasicHealthChecks();
 
             builder.Services.AddDbContext<DefaultContext>(options =>
                 options.UseNpgsql(
@@ -49,7 +35,6 @@ public class Program
             );
 
             builder.Services.AddJwtAuthentication(builder.Configuration);
-
             builder.RegisterDependencies();
 
             builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
@@ -65,6 +50,7 @@ public class Program
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
             var app = builder.Build();
+
             app.UseMiddleware<ValidationExceptionMiddleware>();
 
             if (app.Environment.IsDevelopment())
@@ -73,24 +59,22 @@ public class Program
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            app.UseDefaultLogging();
 
+            app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseBasicHealthChecks();
-
             app.MapControllers();
 
             app.Run();
         }
         catch (Exception ex)
         {
-            Log.Fatal(ex, "Application terminated unexpectedly");
-        }
-        finally
-        {
-            Log.CloseAndFlush();
+            // A responsabilidade de logar a falha continua sendo do logger configurado internamente
+            Console.Error.WriteLine($"Erro fatal ao iniciar a aplicação: {ex}");
+            throw;
         }
     }
 }
