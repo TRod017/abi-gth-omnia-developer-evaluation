@@ -2,6 +2,8 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Application.Common; // necessário para PaginatedList
+using Ambev.DeveloperEvaluation.Domain.Entities;
 
 namespace Ambev.DeveloperEvaluation.Application.Users.GetAllUsers;
 
@@ -13,7 +15,7 @@ namespace Ambev.DeveloperEvaluation.Application.Users.GetAllUsers;
 /// <see cref="GetAllUsersResult"/> response model using <see cref="IMapper"/>. It also logs
 /// the operation using <see cref="ILogger"/> for observability.
 /// </remarks>
-public class GetAllUsersHandler : IRequestHandler<GetAllUsersCommand, IReadOnlyCollection<GetAllUsersResult>>
+public class GetAllUsersHandler : IRequestHandler<GetAllUsersCommand, PaginatedList<GetAllUsersResult>>
 {
     private readonly IUserRepository _repository;
     private readonly IMapper _mapper;
@@ -57,22 +59,28 @@ public class GetAllUsersHandler : IRequestHandler<GetAllUsersCommand, IReadOnlyC
     }
 
     /// <summary>
-    /// Handles the <see cref="GetAllUsersCommand"/> request and returns a list of users.
+    /// Handles the <see cref="GetAllUsersCommand"/> request and returns a paginated list of users.
     /// </summary>
-    /// <param name="command">The request command to retrieve all users.</param>
+    /// <param name="command">The request command with pagination parameters.</param>
     /// <param name="cancellationToken">Cancellation token for the async operation.</param>
-    /// <returns>A collection of <see cref="GetAllUsersResult"/> representing the users.</returns>
-    public async Task<IReadOnlyCollection<GetAllUsersResult>> Handle(GetAllUsersCommand command, CancellationToken cancellationToken)
+    /// <returns>A paginated collection of <see cref="GetAllUsersResult"/>.</returns>
+    public async Task<PaginatedList<GetAllUsersResult>> Handle(GetAllUsersCommand command, CancellationToken cancellationToken)
     {
         try
         {
             LogRetrievingAllUsers(_logger, null);
 
-            var users = await _repository.GetAllAsync(cancellationToken);
+            // Cria consulta paginada com EF usando o repositório
+            var query = _repository.Query();
+            var paginated = await PaginatedList<User>.CreateAsync(query, command.Page, command.Size, cancellationToken);
 
-            LogRetrievedUsers(_logger, users.Count, null);
+            LogRetrievedUsers(_logger, paginated.TotalCount, null);
 
-            return _mapper.Map<IReadOnlyCollection<GetAllUsersResult>>(users);
+            // Mapeia a lista de entidades User para GetAllUsersResult
+            var mapped = _mapper.Map<List<GetAllUsersResult>>(paginated);
+
+            // Retorna nova instância paginada com os resultados mapeados
+            return new PaginatedList<GetAllUsersResult>(mapped, paginated.TotalCount, paginated.CurrentPage, paginated.PageSize);
         }
         catch (Exception ex)
         {

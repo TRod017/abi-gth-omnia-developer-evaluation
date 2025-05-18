@@ -128,27 +128,46 @@ public class UsersController : BaseController
     }
 
     /// <summary>
-    /// Retrieves all users.
+    /// Retrieves all existing users in the system.
     /// </summary>
-    /// <param name="cancellationToken">Token to cancel the operation.</param>
-    /// <returns>A list of all users.</returns>
+    /// <param name="request">Pagination parameters passed via query string.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>A paginated list of users.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(ApiResponseWithData<IEnumerable<GetAllUsersResponse>>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(PaginatedResponse<GetAllUsersResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll([FromQuery] GetAllUsersRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received request to retrieve all users");
 
-        var result = await _mediator.Send(new GetAllUsersCommand(), cancellationToken);
+        // Validação dos parâmetros de paginação
+        var validator = new GetAllUsersRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
-        _logger.LogInformation("Retrieved {Count} users", result.Count);
+        if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Invalid pagination parameters: {@Errors}", validationResult.Errors);
+            return BadRequest(validationResult.Errors);
+        }
 
-        return Ok(new ApiResponseWithData<IEnumerable<GetAllUsersResponse>>
+        // Mapeia o request da WebApi para o command da camada de Application
+        var command = _mapper.Map<GetAllUsersCommand>(request);
+
+        // Handler retorna já paginado via EF
+        var result = await _mediator.Send(command, cancellationToken);
+
+        _logger.LogInformation("Retrieved {Count} users", result.TotalCount);
+
+        return Ok(new PaginatedResponse<GetAllUsersResponse>
         {
             Success = true,
             Message = "Users retrieved successfully",
+            CurrentPage = result.CurrentPage,
+            TotalPages = result.TotalPages,
+            TotalCount = result.TotalCount,
             Data = _mapper.Map<IEnumerable<GetAllUsersResponse>>(result)
         });
     }
+
 
     /// <summary>
     /// Updates an existing user.

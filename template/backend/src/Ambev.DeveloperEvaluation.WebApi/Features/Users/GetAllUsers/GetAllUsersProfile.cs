@@ -20,6 +20,10 @@ public class GetAllUsersProfile : Profile
     /// </summary>
     public GetAllUsersProfile()
     {
+        // Application → WebApi
         CreateMap<GetAllUsersResult, GetAllUsersResponse>();
+
+        // WebApi → Application
+        CreateMap<GetAllUsersRequest, GetAllUsersCommand>();
     }
 }
