@@ -12,8 +12,8 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
 /// </summary>
 /// <remarks>
 /// This handler validates the incoming cart creation command using <see cref="CreateCartValidator"/>.
-/// It maps the command to a <see cref="Cart"/> entity using <see cref="IMapper"/>,
-/// persists it using <see cref="ICartRepository"/>, and logs each step of the operation
+/// It maps the command to a <see cref="Cart"/> entity using <see cref="IMapper"/>.
+/// Persists it using <see cref="ICartRepository"/>, and logs each step of the operation
 /// using <see cref="ILogger"/>. Returns a <see cref="CreateCartResult"/> upon successful creation.
 /// </remarks>
 public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartResult>
@@ -96,7 +96,26 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartRe
 
             LogMapped(_logger, cart, null);
 
+            /// <summary>
+            /// Validates business rules such as quantity limits and discount logic.
+            /// Throws validation exception if rules are violated.
+            /// </summary>
+            var businessRules = cart.ValidateBusinessRules();
+            if (!businessRules.IsValid)
+            {
+                LogValidationFailed(_logger, businessRules.Errors, null);
+                throw new ValidationException("Business rules violated", businessRules.Errors.Select(e =>
+                    new FluentValidation.Results.ValidationFailure(e.Error, e.Detail)).ToList());
+            }
+
             var created = await _repository.CreateAsync(cart, cancellationToken);
+
+            /// <summary>
+            /// Logs the sale creation event including cart metadata such as total and creation date.
+            /// This simulates the SaleCreated event.
+            /// </summary>
+            _logger.LogInformation("SaleCreated: UserId={UserId}, CartId={CartId}, Total={Total}, Date={Date}",
+                cart.UserId, cart.Id, cart.Total, cart.CreatedAt);
 
             LogCreated(_logger, created.Id, null);
 

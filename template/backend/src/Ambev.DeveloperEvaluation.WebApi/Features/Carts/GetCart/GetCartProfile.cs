@@ -22,7 +22,12 @@ public class GetCartProfile : Profile
     public GetCartProfile()
     {
         CreateMap<GetCartResult, GetCartResponse>();
-        CreateMap<GetCartItemResult, GetCartItemResponse>();
+
+        CreateMap<GetCartItemResult, GetCartItemResponse>()
+            .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => src.Discount))
+            .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.Total))
+            .ForMember(dest => dest.TotalWithDiscount, opt => opt.MapFrom(src => src.TotalWithDiscount));
+
         CreateMap<Guid, GetCartCommand>()
             .ConstructUsing(id => new GetCartCommand(id));
     }

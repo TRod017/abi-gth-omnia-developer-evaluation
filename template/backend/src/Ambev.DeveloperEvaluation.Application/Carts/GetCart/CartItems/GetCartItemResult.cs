@@ -1,16 +1,12 @@
 ﻿namespace Ambev.DeveloperEvaluation.Application.Carts.GetCart.CartItems;
 
 /// <summary>
-/// Represents the response model for an individual item in a cart.
+/// Represents an item in the cart, including calculated pricing and discount details.
 /// </summary>
-/// <remarks>
-/// This DTO contains essential information about a cart item,
-/// including the associated product ID, quantity selected, and unit price at the time of inclusion.
-/// </remarks>
 public class GetCartItemResult
 {
     /// <summary>
-    /// Gets or sets the unique identifier of the product associated with this cart item.
+    /// Gets or sets the unique identifier of the product associated with the item.
     /// </summary>
     public Guid ProductId { get; set; }
 
@@ -23,4 +19,19 @@ public class GetCartItemResult
     /// Gets or sets the unit price of the product at the time it was added to the cart.
     /// </summary>
     public decimal UnitPrice { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total value of the item before any discounts.
+    /// </summary>
+    public decimal Total { get; set; }
+
+    /// <summary>
+    /// Gets or sets the discount applied to the item based on business rules.
+    /// </summary>
+    public decimal Discount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the final total value after applying the discount.
+    /// </summary>
+    public decimal TotalWithDiscount { get; set; }
 }

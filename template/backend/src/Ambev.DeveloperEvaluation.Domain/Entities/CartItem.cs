@@ -44,6 +44,29 @@ public class CartItem : BaseEntity
     public decimal Total => UnitPrice * Quantity;
 
     /// <summary>
+    /// Gets the discount percentage applied to the item based on quantity.
+    /// </summary>
+    public decimal DiscountPercentage
+    {
+        get
+        {
+            if (Quantity >= 10 && Quantity <= 20) return 0.20m;
+            if (Quantity >= 4 && Quantity < 10) return 0.10m;
+            return 0.00m;
+        }
+    }
+
+    /// <summary>
+    /// Gets the discount value applied to the item.
+    /// </summary>
+    public decimal Discount => Total * DiscountPercentage;
+
+    /// <summary>
+    /// Gets the total value after applying discount.
+    /// </summary>
+    public decimal TotalWithDiscount => Total - Discount;
+
+    /// <summary>
     /// Gets or sets the date and time the cart item was created.
     /// </summary>
     public DateTime CreatedAt { get; set; }

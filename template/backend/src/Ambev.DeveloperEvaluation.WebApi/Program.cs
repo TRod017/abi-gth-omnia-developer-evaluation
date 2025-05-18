@@ -9,6 +9,7 @@ using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using System.Text.Json.Serialization;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -23,9 +24,19 @@ public class Program
             // Configuração de logging estruturado com Serilog via extensão
             builder.AddDefaultLogging();
 
-            builder.Services.AddControllers();
+            // Adiciona os serviços de controllers à aplicação ASP.NET Core
+            builder.Services.AddControllers()
+                // Configura o comportamento da serialização JSON
+                .AddJsonOptions(options =>
+                {
+                    // Adiciona um conversor que permite que enums sejam serializados e desserializados como strings
+                    // Exemplo: CartStatus.Confirmed será lido/escrito como "Confirmed" em vez de 2
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
+
+
             builder.Services.AddEndpointsApiExplorer();
-            
+
             //Configuração do Swagger com suporte a autenticação JWT
             builder.Services.AddSwaggerGen(c =>
             {

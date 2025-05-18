@@ -47,6 +47,57 @@ public class Cart : BaseEntity
     }
 
     /// <summary>
+    /// Gets the total amount for the cart after applying discounts to each item.
+    /// </summary>
+    public decimal Total => Items.Sum(i => i.TotalWithDiscount);
+
+    /// <summary>
+    /// Checks whether the quantity of a specific item is within the allowed limit.
+    /// </summary>
+    /// <param name="item">The cart item to validate.</param>
+    /// <returns>True if quantity is less than or equal to 20, false otherwise.</returns>
+    public bool IsValidQuantity(CartItem item)
+    {
+        return item.Quantity <= 20;
+    }
+
+    /// <summary>
+    /// Validates business rules specific to the cart, such as quantity limits and discount eligibility.
+    /// </summary>
+    /// <returns>A <see cref="ValidationResultDetail"/> containing any rule violations.</returns>
+    public ValidationResultDetail ValidateBusinessRules()
+    {
+        var errors = new List<ValidationErrorDetail>();
+
+        foreach (var item in Items)
+        {
+            if (item.Quantity > 20)
+            {
+                errors.Add(new ValidationErrorDetail
+                {
+                    Error = "QuantityLimitExceeded",
+                    Detail = $"O produto '{item.ProductName}' excede o limite de 20 unidades permitidas."
+                });
+            }
+
+            if (item.Quantity < 4 && item.Discount > 0)
+            {
+                errors.Add(new ValidationErrorDetail
+                {
+                    Error = "InvalidDiscount",
+                    Detail = $"O produto '{item.ProductName}' está com desconto, mas a quantidade é inferior a 4."
+                });
+            }
+        }
+
+        return new ValidationResultDetail
+        {
+            IsValid = errors.Count == 0,
+            Errors = errors
+        };
+    }
+
+    /// <summary>
     /// Validates the cart entity using <see cref="CartValidator"/>.
     /// </summary>
     /// <returns>A validation result detailing any rule violations.</returns>

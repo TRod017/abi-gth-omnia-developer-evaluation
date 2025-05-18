@@ -18,7 +18,19 @@ public class CreateCartProfile : Profile
     /// </summary>
     public CreateCartProfile()
     {
+        // Mapping from CreateCartCommand to Cart (input → entity)
         CreateMap<CreateCartCommand, Cart>();
-        CreateMap<Cart, CreateCartResult>();
+
+        // Mapping from CartItem (entity) to CreateCartItemResult (output DTO)
+        CreateMap<Ambev.DeveloperEvaluation.Domain.Entities.CartItem, CreateCartItemResult>()
+            .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.Total))
+            .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => src.Discount))
+            .ForMember(dest => dest.TotalWithDiscount, opt => opt.MapFrom(src => src.TotalWithDiscount));
+
+        // Mapping from Cart (entity) to CreateCartResult (output DTO)
+        CreateMap<Cart, CreateCartResult>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+            .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.Total))
+            .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
     }
 }
