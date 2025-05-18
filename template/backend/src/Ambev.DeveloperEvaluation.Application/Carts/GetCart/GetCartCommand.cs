@@ -18,6 +18,22 @@ public class GetCartCommand : IRequest<GetCartResult>
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="GetCartCommand"/> class.
+    /// </summary>
+    public GetCartCommand()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GetCartCommand"/> class with a specified cart ID.
+    /// </summary>
+    /// <param name="id">The unique identifier of the cart.</param>
+    public GetCartCommand(Guid id)
+    {
+        Id = id;
+    }
+
+    /// <summary>
     /// Validates the command using <see cref="GetCartValidator"/>.
     /// </summary>
     /// <returns>

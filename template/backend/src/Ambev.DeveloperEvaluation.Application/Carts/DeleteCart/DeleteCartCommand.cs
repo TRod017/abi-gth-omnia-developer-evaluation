@@ -18,6 +18,22 @@ public class DeleteCartCommand : IRequest<bool>
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="DeleteCartCommand"/> class.
+    /// Parameterless constructor required for deserialization and model binding.
+    /// </summary>
+    public DeleteCartCommand() { }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DeleteCartCommand"/> class
+    /// with the specified cart identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the cart to delete.</param>
+    public DeleteCartCommand(Guid id)
+    {
+        Id = id;
+    }
+
+    /// <summary>
     /// Validates the command using <see cref="DeleteCartValidator"/>.
     /// </summary>
     /// <returns>

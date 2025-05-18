@@ -23,5 +23,7 @@ public class GetCartProfile : Profile
     {
         CreateMap<GetCartResult, GetCartResponse>();
         CreateMap<GetCartItemResult, GetCartItemResponse>();
+        CreateMap<Guid, GetCartCommand>()
+            .ConstructUsing(id => new GetCartCommand(id));
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Validation;
 using MediatR;
 using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart.CartItems;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.UpdateCart;
 
@@ -27,6 +28,11 @@ public class UpdateCartCommand : IRequest<UpdateCartResult>
     /// Gets or sets the list of items to be updated in the cart.
     /// </summary>
     public List<UpdateCartItemCommand> Items { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets the current status of the cart (e.g., Open, Confirmed).
+    /// </summary>
+    public CartStatus Status { get; set; }
 
     /// <summary>
     /// Validates the command using <see cref="UpdateCartValidator"/>.

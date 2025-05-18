@@ -14,6 +14,11 @@ public class UpdateCartRequest
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the unique identifier of the user associated with the cart.
+    /// </summary>
+    public Guid UserId { get; set; }
+
+    /// <summary>
     /// Gets or sets the updated status of the cart (e.g., Open, Confirmed).
     /// </summary>
     public string Status { get; set; } = string.Empty;

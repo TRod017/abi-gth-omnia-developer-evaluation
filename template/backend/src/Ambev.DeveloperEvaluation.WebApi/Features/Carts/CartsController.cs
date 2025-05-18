@@ -13,6 +13,7 @@ using Ambev.DeveloperEvaluation.Application.Carts.GetAllCarts;
 using Ambev.DeveloperEvaluation.Application.Carts.GetCart;
 using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts;
 
@@ -26,6 +27,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts;
 /// </remarks>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CartsController : BaseController
 {
     private readonly IMediator _mediator;

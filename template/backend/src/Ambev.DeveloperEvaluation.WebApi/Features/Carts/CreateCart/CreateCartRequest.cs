@@ -1,4 +1,6 @@
-﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.CreateCart;
+﻿using Ambev.DeveloperEvaluation.Domain.Enums;
+
+namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.CreateCart;
 
 /// <summary>
 /// Represents the request payload used to create a new cart via the API.
@@ -12,6 +14,12 @@ public class CreateCartRequest
     /// Gets or sets the unique identifier of the user who owns the cart.
     /// </summary>
     public Guid UserId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the status of the cart (e.g., Open, Closed).
+    /// </summary>
+    public CartStatus Status { get; set; } = CartStatus.Open;
+
 
     /// <summary>
     /// Gets or sets the list of items to include in the cart.

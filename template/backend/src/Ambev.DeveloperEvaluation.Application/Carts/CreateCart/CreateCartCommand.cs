@@ -22,6 +22,11 @@ public class CreateCartCommand : IRequest<CreateCartResult>
     public Guid UserId { get; set; }
 
     /// <summary>
+    /// Gets or sets the current status of the cart.
+    /// </summary>
+    public CartStatus Status { get; set; } = CartStatus.Open;
+
+    /// <summary>
     /// Gets or sets the list of cart items included in the cart.
     /// </summary>
     public List<CreateCartItemCommand> Items { get; set; } = new();

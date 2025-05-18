@@ -8,6 +8,7 @@ using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -19,14 +20,50 @@ public class Program
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Configuração de logging estruturado com Serilog via extensão
             builder.AddDefaultLogging();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
+            
+            //Configuração do Swagger com suporte a autenticação JWT
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Ambev.DeveloperEvaluation.WebApi",
+                    Version = "v1"
+                });
+                //Define o esquema de segurança JWT no Swagger
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Insira o token JWT no formato: Bearer {seu token}"
+                });
 
-            builder.Services.AddSwaggerGen();
+                //Aplica a exigência de segurança a todos os endpoints
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
             builder.AddBasicHealthChecks();
 
+            // Banco de dados (PostgreSQL)
             builder.Services.AddDbContext<DefaultContext>(options =>
                 options.UseNpgsql(
                     builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -34,9 +71,13 @@ public class Program
                 )
             );
 
+            // Autenticação JWT
             builder.Services.AddJwtAuthentication(builder.Configuration);
+
+            // Injeção de dependências (camada IoC)
             builder.RegisterDependencies();
 
+            // AutoMapper e MediatR
             builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
 
             builder.Services.AddMediatR(cfg =>
@@ -47,10 +88,12 @@ public class Program
                 );
             });
 
+            // Pipeline de validação global
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
             var app = builder.Build();
 
+            // Middleware global para capturar exceções de validação
             app.UseMiddleware<ValidationExceptionMiddleware>();
 
             if (app.Environment.IsDevelopment())
@@ -60,19 +103,17 @@ public class Program
             }
 
             app.UseDefaultLogging();
-
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseBasicHealthChecks();
+
             app.MapControllers();
 
             app.Run();
         }
         catch (Exception ex)
         {
-            // A responsabilidade de logar a falha continua sendo do logger configurado internamente
             Console.Error.WriteLine($"Erro fatal ao iniciar a aplicação: {ex}");
             throw;
         }

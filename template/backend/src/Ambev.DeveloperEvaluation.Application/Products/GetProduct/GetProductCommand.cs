@@ -18,6 +18,20 @@ public class GetProductCommand : IRequest<GetProductResult>
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="GetProductCommand"/> class.
+    /// </summary>
+    public GetProductCommand() { }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GetProductCommand"/> class with a specified ID.
+    /// </summary>
+    /// <param name="id">The unique identifier of the product.</param>
+    public GetProductCommand(Guid id)
+    {
+        Id = id;
+    }
+
+    /// <summary>
     /// Validates the command using <see cref="GetProductValidator"/>.
     /// </summary>
     /// <returns>

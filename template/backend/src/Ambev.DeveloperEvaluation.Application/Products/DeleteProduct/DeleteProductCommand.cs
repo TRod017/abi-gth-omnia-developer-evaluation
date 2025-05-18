@@ -18,6 +18,21 @@ public class DeleteProductCommand : IRequest<bool>
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="DeleteProductCommand"/> class.
+    /// This parameterless constructor is required for model binding and deserialization.
+    /// </summary>
+    public DeleteProductCommand() { }
+
+    /// <summary>
+    /// Initializes a new instance of <see cref="DeleteProductCommand"/> with the specified product ID.
+    /// </summary>
+    /// <param name="id">The unique identifier of the product.</param>
+    public DeleteProductCommand(Guid id)
+    {
+        Id = id;
+    }
+
+    /// <summary>
     /// Validates the command using <see cref="DeleteProductValidator"/>.
     /// </summary>
     /// <returns>

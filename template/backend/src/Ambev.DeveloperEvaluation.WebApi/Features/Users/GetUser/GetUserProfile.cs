@@ -12,7 +12,15 @@ public class GetUserProfile : Profile
     /// </summary>
     public GetUserProfile()
     {
+        // Mapeamento de Guid --> GetUserCommand
         CreateMap<Guid, Application.Users.GetUser.GetUserCommand>()
             .ConstructUsing(id => new Application.Users.GetUser.GetUserCommand(id));
+
+        // Mapeamento de GetUserResult --> GetUserResponse (nomes idênticos)
+        CreateMap<Application.Users.GetUser.GetUserResult, GetUserResponse>();
+
+        // Mapeamento manual entre User --> GetUserResult
+        CreateMap<Domain.Entities.User, Application.Users.GetUser.GetUserResult>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Username));
     }
 }

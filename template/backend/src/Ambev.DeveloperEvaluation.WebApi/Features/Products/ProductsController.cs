@@ -13,6 +13,7 @@ using Ambev.DeveloperEvaluation.Application.Products.DeleteProduct;
 using Ambev.DeveloperEvaluation.Application.Products.GetAllProducts;
 using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Products;
 
@@ -26,6 +27,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products;
 /// </remarks>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ProductsController : BaseController
 {
     private readonly IMediator _mediator;

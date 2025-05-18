@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
 using Ambev.DeveloperEvaluation.Application.Carts.CreateCart.CartItem;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.CreateCart;
 
@@ -23,7 +24,8 @@ public class CreateCartProfile : Profile
     public CreateCartProfile()
     {
         CreateMap<CreateCartRequest, CreateCartCommand>();
-        CreateMap<CreateCartItemRequest, CreateCartItemCommand>();
         CreateMap<CreateCartResult, CreateCartResponse>();
+        CreateMap<CreateCartItemRequest, CreateCartItemCommand>();
+        CreateMap<CreateCartItemCommand, CartItem>();
     }
 }
