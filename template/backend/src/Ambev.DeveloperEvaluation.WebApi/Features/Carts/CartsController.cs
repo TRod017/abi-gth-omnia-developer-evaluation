@@ -132,25 +132,45 @@ public class CartsController : BaseController
     /// <summary>
     /// Retrieves all existing carts in the system.
     /// </summary>
+    /// <param name="request">Pagination parameters passed via query string.</param>
     /// <param name="cancellationToken">Token to cancel the request.</param>
-    /// <returns>A list of all carts.</returns>
+    /// <returns>A paginated list of carts.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(ApiResponseWithData<IEnumerable<GetAllCartsResponse>>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(PaginatedResponse<GetAllCartsResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll([FromQuery] GetAllCartsRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received request to retrieve all carts");
 
-        var result = await _mediator.Send(new GetAllCartsCommand(), cancellationToken);
+        // Validação dos parâmetros de paginação
+        var validator = new GetAllCartsRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
-        _logger.LogInformation("Retrieved {Count} carts", result.Count);
+        if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Invalid pagination parameters: {@Errors}", validationResult.Errors);
+            return BadRequest(validationResult.Errors);
+        }
 
-        return Ok(new ApiResponseWithData<IEnumerable<GetAllCartsResponse>>
+        // Mapeia o request da WebApi para o command da camada de Application
+        var command = _mapper.Map<GetAllCartsCommand>(request);
+
+        // Handler retorna já paginado via EF
+        var result = await _mediator.Send(command, cancellationToken);
+
+        _logger.LogInformation("Retrieved {Count} carts", result.TotalCount);
+
+        return Ok(new PaginatedResponse<GetAllCartsResponse>
         {
             Success = true,
             Message = "Carts retrieved successfully",
+            CurrentPage = result.CurrentPage,
+            TotalPages = result.TotalPages,
+            TotalCount = result.TotalCount,
             Data = _mapper.Map<IEnumerable<GetAllCartsResponse>>(result)
         });
     }
+
+
 
     /// <summary>
     /// Updates an existing cart by its ID.

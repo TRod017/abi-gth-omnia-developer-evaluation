@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using System.Linq;
 
 namespace Ambev.DeveloperEvaluation.Domain.Repositories;
 
@@ -45,4 +46,10 @@ public interface ICartRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>True if the cart was deleted, false if not found</returns>
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns a queryable collection of carts for read-only operations such as filtering, sorting, and pagination.
+    /// </summary>
+    /// <returns>An <see cref="IQueryable{Cart}"/> that can be used with LINQ for further composition.</returns>
+    IQueryable<Cart> Query();
 }

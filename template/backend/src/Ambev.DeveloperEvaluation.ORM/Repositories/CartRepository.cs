@@ -77,4 +77,18 @@ public class CartRepository : ICartRepository
         await _context.SaveChangesAsync(cancellationToken);
         return true;
     }
+
+    /// <inheritdoc />
+    public IQueryable<Cart> Query()
+    {
+        /// <summary>
+        /// Returns an <see cref="IQueryable{Cart}"/> representing the base query for cart entities,
+        /// including related cart items. This query is configured with <c>AsNoTracking</c> for
+        /// optimized read-only scenarios such as filtering, sorting, and pagination.
+        /// </summary>
+        /// <returns>An <see cref="IQueryable{Cart}"/> with cart and item data.</returns>
+        return _context.Carts
+            .Include(c => c.Items)
+            .AsNoTracking(); // Does not track entities in the context, improving read performance
+    }
 }

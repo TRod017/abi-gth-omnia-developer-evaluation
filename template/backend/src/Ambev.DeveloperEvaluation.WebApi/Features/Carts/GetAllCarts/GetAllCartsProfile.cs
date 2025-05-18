@@ -4,11 +4,13 @@ using Ambev.DeveloperEvaluation.Application.Carts.GetAllCarts;
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.GetAllCarts;
 
 /// <summary>
-/// AutoMapper profile for mapping between application layer models and Web API response models
+/// AutoMapper profile for mapping between application layer models and Web API models
 /// in the GetAllCarts use case.
 /// </summary>
 /// <remarks>
-/// Defines the mapping from <see cref="GetAllCartsResult"/> to <see cref="GetAllCartsResponse"/>.
+/// Defines mappings between:
+/// - <see cref="GetAllCartsResult"/> and <see cref="GetAllCartsResponse"/>
+/// - <see cref="GetAllCartsRequest"/> and <see cref="GetAllCartsCommand"/>
 /// </remarks>
 public class GetAllCartsProfile : Profile
 {
@@ -18,6 +20,10 @@ public class GetAllCartsProfile : Profile
     /// </summary>
     public GetAllCartsProfile()
     {
+        // Application → WebApi
         CreateMap<GetAllCartsResult, GetAllCartsResponse>();
+
+        // WebApi → Application
+        CreateMap<GetAllCartsRequest, GetAllCartsCommand>();
     }
 }

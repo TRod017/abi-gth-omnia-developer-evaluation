@@ -2,6 +2,8 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Application.Common; // necessário para PaginatedList
+using Ambev.DeveloperEvaluation.Domain.Entities;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.GetAllCarts;
 
@@ -13,7 +15,7 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.GetAllCarts;
 /// <see cref="GetAllCartsResult"/> response model using <see cref="IMapper"/>. It also logs
 /// the operation using <see cref="ILogger"/> for observability.
 /// </remarks>
-public class GetAllCartsHandler : IRequestHandler<GetAllCartsCommand, IReadOnlyCollection<GetAllCartsResult>>
+public class GetAllCartsHandler : IRequestHandler<GetAllCartsCommand, PaginatedList<GetAllCartsResult>>
 {
     private readonly ICartRepository _repository;
     private readonly IMapper _mapper;
@@ -57,22 +59,28 @@ public class GetAllCartsHandler : IRequestHandler<GetAllCartsCommand, IReadOnlyC
     }
 
     /// <summary>
-    /// Handles the <see cref="GetAllCartsCommand"/> request and returns a list of carts.
+    /// Handles the <see cref="GetAllCartsCommand"/> request and returns a paginated list of carts.
     /// </summary>
-    /// <param name="command">The request command to retrieve all carts.</param>
+    /// <param name="command">The request command with pagination parameters.</param>
     /// <param name="cancellationToken">Cancellation token for the async operation.</param>
-    /// <returns>A collection of <see cref="GetAllCartsResult"/> representing the carts.</returns>
-    public async Task<IReadOnlyCollection<GetAllCartsResult>> Handle(GetAllCartsCommand command, CancellationToken cancellationToken)
+    /// <returns>A paginated collection of <see cref="GetAllCartsResult"/>.</returns>
+    public async Task<PaginatedList<GetAllCartsResult>> Handle(GetAllCartsCommand command, CancellationToken cancellationToken)
     {
         try
         {
             LogRetrievingAllCarts(_logger, null);
 
-            var carts = await _repository.GetAllAsync(cancellationToken);
+            // Cria consulta paginada com EF usando o repositório
+            var query = _repository.Query();
+            var paginated = await PaginatedList<Cart>.CreateAsync(query, command.Page, command.Size, cancellationToken);
 
-            LogRetrievedCarts(_logger, carts.Count, null);
+            LogRetrievedCarts(_logger, paginated.TotalCount, null);
 
-            return _mapper.Map<IReadOnlyCollection<GetAllCartsResult>>(carts);
+            // Mapeia a lista de entidades Cart para GetAllCartsResult
+            var mapped = _mapper.Map<List<GetAllCartsResult>>(paginated);
+
+            // Retorna nova instância paginada com os resultados mapeados
+            return new PaginatedList<GetAllCartsResult>(mapped, paginated.TotalCount, paginated.CurrentPage, paginated.PageSize);
         }
         catch (Exception ex)
         {
