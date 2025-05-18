@@ -130,27 +130,47 @@ public class ProductsController : BaseController
     }
 
     /// <summary>
-    /// Retrieves all products.
+    /// Retrieves a paginated list of products.
     /// </summary>
-    /// <param name="cancellationToken">Token to cancel the operation.</param>
-    /// <returns>A list of all products.</returns>
+    /// <param name="request">Pagination parameters</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Paginated list of products</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(ApiResponseWithData<IEnumerable<GetAllProductsResponse>>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(PaginatedResponse<GetAllProductsResponse>), 200)]
+    [ProducesResponseType(typeof(IEnumerable<FluentValidation.Results.ValidationFailure>), 400)]
+    public async Task<IActionResult> GetAll([FromQuery] GetAllProductsRequest request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Received request to retrieve all products");
+        _logger.LogInformation("Received request to retrieve products");
 
-        var result = await _mediator.Send(new GetAllProductsCommand(), cancellationToken);
+        // Validação dos parâmetros de paginação
+        var validator = new GetAllProductsRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
-        _logger.LogInformation("Retrieved {Count} products", result.Count);
+        if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Invalid pagination parameters: {@Errors}", validationResult.Errors);
+            return BadRequest(validationResult.Errors);
+        }
 
-        return Ok(new ApiResponseWithData<IEnumerable<GetAllProductsResponse>>
+        // Mapeia o request da WebApi para o command da camada de Application
+        var command = _mapper.Map<GetAllProductsCommand>(request);
+
+        // Handler retorna já paginado via EF
+        var result = await _mediator.Send(command, cancellationToken);
+
+        _logger.LogInformation("Retrieved {Count} products", result.TotalCount);
+
+        return Ok(new PaginatedResponse<GetAllProductsResponse>
         {
             Success = true,
             Message = "Products retrieved successfully",
+            CurrentPage = result.CurrentPage,
+            TotalPages = result.TotalPages,
+            TotalCount = result.TotalCount,
             Data = _mapper.Map<IEnumerable<GetAllProductsResponse>>(result)
         });
     }
+
 
     /// <summary>
     /// Updates an existing product.

@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Application.Common;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.GetAllProducts;
 
@@ -9,11 +10,11 @@ namespace Ambev.DeveloperEvaluation.Application.Products.GetAllProducts;
 /// Handler responsible for processing <see cref="GetAllProductsCommand"/> requests.
 /// </summary>
 /// <remarks>
-/// This handler retrieves all products from the repository and maps them to the
-/// <see cref="GetAllProductsResult"/> response model using <see cref="IMapper"/>. It also logs
-/// the operation using <see cref="ILogger"/> for observability.
+/// This handler retrieves products from the repository applying pagination using EF Core's IQueryable capabilities,
+/// and maps them to the <see cref="GetAllProductsResult"/> response model using <see cref="IMapper"/>.
+/// It also logs the operation using <see cref="ILogger"/> for observability.
 /// </remarks>
-public class GetAllProductsHandler : IRequestHandler<GetAllProductsCommand, IReadOnlyCollection<GetAllProductsResult>>
+public class GetAllProductsHandler : IRequestHandler<GetAllProductsCommand, PaginatedList<GetAllProductsResult>>
 {
     private readonly IProductRepository _repository;
     private readonly IMapper _mapper;
@@ -57,22 +58,27 @@ public class GetAllProductsHandler : IRequestHandler<GetAllProductsCommand, IRea
     }
 
     /// <summary>
-    /// Handles the <see cref="GetAllProductsCommand"/> request and returns a list of products.
+    /// Handles the <see cref="GetAllProductsCommand"/> request and returns a paginated list of products.
     /// </summary>
-    /// <param name="command">The request command to retrieve all products.</param>
+    /// <param name="command">The request command to retrieve paginated products.</param>
     /// <param name="cancellationToken">Cancellation token for the async operation.</param>
-    /// <returns>A collection of <see cref="GetAllProductsResult"/> representing the products.</returns>
-    public async Task<IReadOnlyCollection<GetAllProductsResult>> Handle(GetAllProductsCommand command, CancellationToken cancellationToken)
+    /// <returns>A <see cref="PaginatedList{GetAllProductsResult}"/> representing the paginated products.</returns>
+    public async Task<PaginatedList<GetAllProductsResult>> Handle(GetAllProductsCommand command, CancellationToken cancellationToken)
     {
         try
         {
             LogRetrievingAllProducts(_logger, null);
 
-            var products = await _repository.GetAllAsync(cancellationToken);
+            var queryable = _repository.Query();
 
-            LogRetrievedProducts(_logger, products.Count, null);
+            var paginatedProducts = await PaginatedList<GetAllProductsResult>.CreateAsync(
+                queryable.Select(p => _mapper.Map<GetAllProductsResult>(p)),
+                command.Page,
+                command.Size);
 
-            return _mapper.Map<IReadOnlyCollection<GetAllProductsResult>>(products);
+            LogRetrievedProducts(_logger, paginatedProducts.TotalCount, null);
+
+            return paginatedProducts;
         }
         catch (Exception ex)
         {

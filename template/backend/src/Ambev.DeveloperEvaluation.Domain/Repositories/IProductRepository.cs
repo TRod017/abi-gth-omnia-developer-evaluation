@@ -45,4 +45,10 @@ public interface IProductRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>True if the product was deleted, false if not found</returns>
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns a queryable collection of products for filtering, sorting, or pagination.
+    /// </summary>
+    /// <returns>An <see cref="IQueryable{Product}"/> configured for read-only operations.</returns>
+    IQueryable<Product> Query();
 }

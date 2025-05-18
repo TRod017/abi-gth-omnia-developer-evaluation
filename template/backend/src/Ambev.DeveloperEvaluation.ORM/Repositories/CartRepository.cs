@@ -7,6 +7,10 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories;
 /// <summary>
 /// Implementation of <see cref="ICartRepository"/> using Entity Framework Core.
 /// </summary>
+/// <remarks>
+/// Provides data access logic for the Cart entity, enabling create, read, update, delete,
+/// and query operations over the underlying PostgreSQL database.
+/// </remarks>
 public class CartRepository : ICartRepository
 {
     private readonly DefaultContext _context;
@@ -20,7 +24,12 @@ public class CartRepository : ICartRepository
         _context = context;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Adds a new cart entity asynchronously to the database.
+    /// </summary>
+    /// <param name="cart">The cart entity to be added.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>The created cart entity after being saved.</returns>
     public async Task<Cart> CreateAsync(Cart cart, CancellationToken cancellationToken = default)
     {
         await _context.Carts.AddAsync(cart, cancellationToken);
@@ -28,7 +37,13 @@ public class CartRepository : ICartRepository
         return cart;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Retrieves a cart entity by its unique identifier asynchronously,
+    /// including related cart items.
+    /// </summary>
+    /// <param name="id">The unique identifier of the cart.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>The cart entity with items if found; otherwise, null.</returns>
     public async Task<Cart?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Carts
@@ -36,7 +51,12 @@ public class CartRepository : ICartRepository
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Retrieves all cart entities asynchronously,
+    /// including their related cart items.
+    /// </summary>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A read-only collection of all carts with their items.</returns>
     public async Task<IReadOnlyCollection<Cart>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _context.Carts
@@ -44,7 +64,14 @@ public class CartRepository : ICartRepository
             .ToListAsync(cancellationToken);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Updates an existing cart entity asynchronously in the database,
+    /// including its related cart items.
+    /// </summary>
+    /// <param name="cart">The cart entity containing updated data.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>The updated cart entity after being saved.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when the cart to update is not found.</exception>
     public async Task<Cart> UpdateAsync(Cart cart, CancellationToken cancellationToken = default)
     {
         var existingCart = await _context.Carts
@@ -66,7 +93,12 @@ public class CartRepository : ICartRepository
         return existingCart;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Deletes a cart entity asynchronously by its unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the cart to delete.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns><c>true</c> if the cart was found and deleted; otherwise, <c>false</c>.</returns>
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var cart = await GetByIdAsync(id, cancellationToken);
@@ -78,15 +110,17 @@ public class CartRepository : ICartRepository
         return true;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Provides a queryable collection of cart entities including their items,
+    /// configured for optimized read-only operations.
+    /// </summary>
+    /// <remarks>
+    /// This method returns an <see cref="IQueryable{Cart}"/> with <c>AsNoTracking()</c> applied,
+    /// allowing efficient filtering, sorting, and pagination without the overhead of change tracking.
+    /// </remarks>
+    /// <returns>An <see cref="IQueryable{Cart}"/> for composing queries against carts and their items.</returns>
     public IQueryable<Cart> Query()
     {
-        /// <summary>
-        /// Returns an <see cref="IQueryable{Cart}"/> representing the base query for cart entities,
-        /// including related cart items. This query is configured with <c>AsNoTracking</c> for
-        /// optimized read-only scenarios such as filtering, sorting, and pagination.
-        /// </summary>
-        /// <returns>An <see cref="IQueryable{Cart}"/> with cart and item data.</returns>
         return _context.Carts
             .Include(c => c.Items)
             .AsNoTracking(); // Does not track entities in the context, improving read performance
