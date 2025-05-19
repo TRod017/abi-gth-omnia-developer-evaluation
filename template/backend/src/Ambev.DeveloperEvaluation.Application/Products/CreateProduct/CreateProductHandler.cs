@@ -78,6 +78,9 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Create
 
             _logger.LogDebug("Mapped CreateProductCommand to Product entity: {@Product}", product);
 
+            // Validate business rules in domain entity
+            product.EnsureBusinessRulesAreMet();
+
             var created = await _repository.CreateAsync(product, cancellationToken);
 
             _logCreated(_logger, created.Id, null);

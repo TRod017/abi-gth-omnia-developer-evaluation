@@ -50,7 +50,13 @@ public class CreateUserCommand : IRequest<CreateUserResult>
     /// </summary>
     public UserRole Role { get; set; }
 
-
+    /// <summary>
+    /// Validates the current command using <see cref="CreateUserCommandValidator"/>.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="ValidationResultDetail"/> containing validation results such as
+    /// success flag and detailed error messages, if any.
+    /// </returns>
     public ValidationResultDetail Validate()
     {
         var validator = new CreateUserCommandValidator();
@@ -58,7 +64,7 @@ public class CreateUserCommand : IRequest<CreateUserResult>
         return new ValidationResultDetail
         {
             IsValid = result.IsValid,
-            Errors = result.Errors.Select(o => (ValidationErrorDetail)o)
+            Errors = result.Errors.Select(o => (ValidationErrorDetail)o).ToList()
         };
     }
 }

@@ -50,6 +50,40 @@ public class Product
             IsValid = result.IsValid,
             Errors = result.Errors.Select(e => (ValidationErrorDetail)e)
         };
+    }
 
+    /// <summary>
+    /// Ensures that the requested quantity is available in stock.
+    /// Throws <see cref="DomainException"/> if stock is insufficient.
+    /// </summary>
+    /// <param name="requestedQuantity">The quantity requested.</param>
+    public void EnsureInStockOrThrow(int requestedQuantity)
+    {
+        if (AvailableQuantity < requestedQuantity)
+        {
+            throw new DomainException($"Insufficient stock for product '{Name}'. Requested: {requestedQuantity}, Available: {AvailableQuantity}");
+        }
+    }
+
+    /// <summary>
+    /// Ensures the product has a valid positive price.
+    /// Throws <see cref="DomainException"/> if the price is invalid.
+    /// </summary>
+    public void EnsureValidPriceOrThrow()
+    {
+        if (UnitPrice <= 0)
+        {
+            throw new DomainException($"Product '{Name}' must have a positive price.");
+        }
+    }
+
+    /// <summary>
+    /// Ensures that the product respects all business rules.
+    /// Throws <see cref="DomainException"/> if any rule is violated.
+    /// </summary>
+    public void EnsureBusinessRulesAreMet()
+    {
+        EnsureValidPriceOrThrow();
+        // Add future domain validations here if needed.
     }
 }

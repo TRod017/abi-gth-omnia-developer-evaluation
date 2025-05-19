@@ -19,8 +19,15 @@ public class UpdateCartValidator : AbstractValidator<UpdateCartCommand>
     /// </summary>
     public UpdateCartValidator()
     {
-        RuleFor(x => x.Id).NotEmpty();
-        RuleFor(x => x.UserId).NotEmpty();
-        RuleForEach(x => x.Items).SetValidator(new UpdateCartItemValidator());
+        RuleFor(x => x.Id)
+            .NotEmpty()
+            .WithMessage("Cart ID must be provided.");
+
+        RuleFor(x => x.UserId)
+            .NotEmpty()
+            .WithMessage("User ID must be provided.");
+
+        RuleForEach(x => x.Items)
+            .SetValidator(new UpdateCartItemValidator());
     }
 }

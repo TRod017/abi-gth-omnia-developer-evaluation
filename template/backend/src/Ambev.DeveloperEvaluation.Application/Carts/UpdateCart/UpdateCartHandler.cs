@@ -102,6 +102,13 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, UpdateCartRe
             }
 
             _mapper.Map(command, cart);
+
+            /// <summary>
+            /// Validates business rules such as quantity limits and discount logic.
+            /// Throws DomainException if any rule is violated.
+            /// </summary>
+            cart.EnsureBusinessRulesAreMet();
+
             var updated = await _repository.UpdateAsync(cart, cancellationToken);
 
             LogCartUpdated(_logger, updated.Id, null);

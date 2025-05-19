@@ -62,7 +62,7 @@ public class UpdateUserCommand : IRequest<UpdateUserResult>
         return new ValidationResultDetail
         {
             IsValid = result.IsValid,
-            Errors = result.Errors.Select(e => (ValidationErrorDetail)e)
+            Errors = result.Errors.Select(e => (ValidationErrorDetail)e).ToList()
         };
     }
 }

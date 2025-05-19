@@ -94,7 +94,7 @@ public class UpdateUserHandler : IRequestHandler<UpdateUserCommand, UpdateUserRe
             }
 
             var user = await _repository.GetByIdAsync(command.Id, cancellationToken);
-            
+
             if (user == null)
             {
                 LogUserNotFound(_logger, command.Id, null);
@@ -102,6 +102,10 @@ public class UpdateUserHandler : IRequestHandler<UpdateUserCommand, UpdateUserRe
             }
 
             _mapper.Map(command, user);
+
+            // Validate business rules in domain entity
+            user.EnsureBusinessRulesAreMet();
+
             var updated = await _repository.UpdateAsync(user, cancellationToken);
 
             LogUserUpdated(_logger, updated.Id, null);

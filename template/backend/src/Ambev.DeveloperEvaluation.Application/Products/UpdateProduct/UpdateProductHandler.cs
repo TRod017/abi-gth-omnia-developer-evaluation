@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using FluentValidation;
 using MediatR;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
@@ -103,6 +103,9 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, Update
             }
 
             _mapper.Map(command, product);
+
+            // Validate business rules in domain entity
+            product.EnsureBusinessRulesAreMet();
 
             var updated = await _repository.UpdateAsync(product, cancellationToken);
 

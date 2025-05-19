@@ -98,15 +98,9 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartRe
 
             /// <summary>
             /// Validates business rules such as quantity limits and discount logic.
-            /// Throws validation exception if rules are violated.
+            /// Throws DomainException if any rule is violated.
             /// </summary>
-            var businessRules = cart.ValidateBusinessRules();
-            if (!businessRules.IsValid)
-            {
-                LogValidationFailed(_logger, businessRules.Errors, null);
-                throw new ValidationException("Business rules violated", businessRules.Errors.Select(e =>
-                    new FluentValidation.Results.ValidationFailure(e.Error, e.Detail)).ToList());
-            }
+            cart.EnsureBusinessRulesAreMet();
 
             var created = await _repository.CreateAsync(cart, cancellationToken);
 

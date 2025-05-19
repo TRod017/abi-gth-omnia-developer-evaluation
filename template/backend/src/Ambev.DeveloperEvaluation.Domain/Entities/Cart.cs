@@ -111,4 +111,35 @@ public class Cart : BaseEntity
             Errors = result.Errors.Select(e => (ValidationErrorDetail)e)
         };
     }
+
+    /// <summary>
+    /// Ensures that the quantity of a given item does not exceed business limits.
+    /// Throws <see cref="DomainException"/> if the quantity is invalid.
+    /// </summary>
+    /// <param name="item">The item to validate.</param>
+    public void EnsureValidQuantity(CartItem item)
+    {
+        if (item.Quantity > 20)
+            throw new DomainException($"Product '{item.ProductName}' exceeds the limit of 20 units per cart.");
+    }
+
+    /// <summary>
+    /// Ensures all business rules related to cart items are respected.
+    /// Throws <see cref="DomainException"/> when any rule is violated.
+    /// </summary>
+    public void EnsureBusinessRulesAreMet()
+    {
+        foreach (var item in Items)
+        {
+            if (item.Quantity > 20)
+            {
+                throw new DomainException($"Product '{item.ProductName}' exceeds the limit of 20 units per cart.");
+            }
+
+            if (item.Quantity < 4 && item.Discount > 0)
+            {
+                throw new DomainException($"Product '{item.ProductName}' has a discount, but quantity is below 4.");
+            }
+        }
+    }
 }

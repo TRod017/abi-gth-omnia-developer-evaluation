@@ -51,7 +51,7 @@ public class UpdateProductCommand : IRequest<UpdateProductResult>
         return new ValidationResultDetail
         {
             IsValid = result.IsValid,
-            Errors = result.Errors.Select(e => (ValidationErrorDetail)e)
+            Errors = result.Errors.Select(e => (ValidationErrorDetail)e).ToList()
         };
     }
 }
