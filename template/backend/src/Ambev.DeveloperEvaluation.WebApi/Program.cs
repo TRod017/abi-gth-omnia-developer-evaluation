@@ -21,7 +21,8 @@ public class Program
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Configuração de logging estruturado com Serilog via extensão
+            // Configuração de logging estruturado com Serilog via extensão (inclui MongoDB)
+            // O AddDefaultLogging já lê o appsettings e configura os sinks, inclusive MongoDB
             builder.AddDefaultLogging();
 
             // Adiciona os serviços de controllers à aplicação ASP.NET Core
@@ -113,7 +114,9 @@ public class Program
                 app.UseSwaggerUI();
             }
 
+            // Usa o middleware para logging configurado via LoggingExtension
             app.UseDefaultLogging();
+
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
