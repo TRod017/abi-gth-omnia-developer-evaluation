@@ -9,7 +9,9 @@ namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 public static class CartItemTestData
 {
     private static readonly Faker<CartItem> CartItemFaker = new Faker<CartItem>()
+        .RuleFor(i => i.CartId, f => f.Random.Guid()) // Adiciona CartId para validação
         .RuleFor(i => i.ProductId, f => f.Random.Guid())
+        .RuleFor(i => i.ProductName, f => f.Commerce.ProductName()) // Adiciona ProductName para validação
         .RuleFor(i => i.Quantity, f => f.Random.Int(1, 10))
         .RuleFor(i => i.UnitPrice, f => f.Random.Decimal(1, 500));
 
@@ -22,7 +24,7 @@ public static class CartItemTestData
     }
 
     /// <summary>
-    /// Generates a CartItem with an empty ProductId to test validation failure.
+    /// Generates a CartItem with an empty ProductId for negative test.
     /// </summary>
     public static CartItem GenerateWithEmptyProductId()
     {
@@ -32,7 +34,7 @@ public static class CartItemTestData
     }
 
     /// <summary>
-    /// Generates a CartItem with zero quantity to test validation failure.
+    /// Generates a CartItem with zero quantity for negative test.
     /// </summary>
     public static CartItem GenerateWithZeroQuantity()
     {
@@ -42,7 +44,7 @@ public static class CartItemTestData
     }
 
     /// <summary>
-    /// Generates a CartItem with negative unit price to test validation failure.
+    /// Generates a CartItem with negative unit price for negative test.
     /// </summary>
     public static CartItem GenerateWithNegativeUnitPrice()
     {

@@ -4,8 +4,8 @@ using Bogus;
 namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 
 /// <summary>
-/// Provides methods for generating Product test data using the Bogus library.
-/// Ensures consistency and realism across test cases.
+/// Provides test data generation for Product entities using the Bogus library.
+/// Centralizes creation of valid and invalid Product instances for testing purposes.
 /// </summary>
 public static class ProductTestData
 {
@@ -16,16 +16,18 @@ public static class ProductTestData
         .RuleFor(p => p.AvailableQuantity, f => f.Random.Int(0, 500));
 
     /// <summary>
-    /// Generates a valid Product entity with all fields correctly populated.
+    /// Generates a valid Product with realistic data.
     /// </summary>
+    /// <returns>A Product with all valid properties.</returns>
     public static Product GenerateValidProduct()
     {
         return ProductFaker.Generate();
     }
 
     /// <summary>
-    /// Generates a Product with empty name, used to test validation failures.
+    /// Generates a Product with an empty name for validation failure testing.
     /// </summary>
+    /// <returns>A Product with an empty Name property.</returns>
     public static Product GenerateWithEmptyName()
     {
         var product = GenerateValidProduct();
@@ -34,8 +36,9 @@ public static class ProductTestData
     }
 
     /// <summary>
-    /// Generates a Product with empty description, used to test validation failures.
+    /// Generates a Product with an empty description for validation failure testing.
     /// </summary>
+    /// <returns>A Product with an empty Description property.</returns>
     public static Product GenerateWithEmptyDescription()
     {
         var product = GenerateValidProduct();
@@ -44,8 +47,9 @@ public static class ProductTestData
     }
 
     /// <summary>
-    /// Generates a Product with negative price, used to test validation failures.
+    /// Generates a Product with a negative unit price for validation failure testing.
     /// </summary>
+    /// <returns>A Product with a negative UnitPrice property.</returns>
     public static Product GenerateWithNegativePrice()
     {
         var product = GenerateValidProduct();
@@ -54,8 +58,9 @@ public static class ProductTestData
     }
 
     /// <summary>
-    /// Generates a Product with negative quantity, used to test validation failures.
+    /// Generates a Product with a negative available quantity for validation failure testing.
     /// </summary>
+    /// <returns>A Product with a negative AvailableQuantity property.</returns>
     public static Product GenerateWithNegativeQuantity()
     {
         var product = GenerateValidProduct();
