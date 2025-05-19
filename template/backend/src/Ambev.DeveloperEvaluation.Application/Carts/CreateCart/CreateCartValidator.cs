@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Carts.CreateCart.CartItem;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using FluentValidation;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
@@ -22,6 +23,10 @@ public class CreateCartValidator : AbstractValidator<CreateCartCommand>
         RuleFor(x => x.UserId)
             .NotEmpty()
             .WithMessage("User ID must be provided.");
+        
+        RuleFor(x => x.Status)
+                .NotEqual(CartStatus.Unknown)
+                .WithMessage("Cart status must be a valid value.");
 
         RuleFor(x => x.Items)
             .NotNull()

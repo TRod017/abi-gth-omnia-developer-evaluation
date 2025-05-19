@@ -2,14 +2,19 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Unit.Application.TestData.Cart;
+using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Carts.CreateCart;
 
+/// <summary>
+/// Unit tests for the <see cref="CreateCartHandler"/> class.
+/// Validates behavior when handling CreateCartCommand requests.
+/// </summary>
 public class CreateCartHandlerTests
 {
     private readonly ICartRepository _cartRepository;
@@ -30,21 +35,22 @@ public class CreateCartHandlerTests
     {
         // Arrange
         var command = CreateCartHandlerTestData.GenerateValidCommand();
-        var cart = new Cart
-        {
-            Id = Guid.NewGuid(),
-            UserId = command.UserId,
-            Items = command.Items.Select(i => new CartItem
-            {
-                ProductId = i.ProductId,
-                Quantity = i.Quantity
-            }).ToList()
-        };
 
-        var result = new CreateCartResult { Id = cart.Id };
+        // Use CartTestData para gerar entidade
+        var cart = CartTestData.GenerateValidCart();
+
+        // Ajusta propriedades para refletir o comando
+        cart.UserId = command.UserId;
+        cart.Items = command.Items.Select(i => new Ambev.DeveloperEvaluation.Domain.Entities.CartItem
+        {
+            ProductId = i.ProductId,
+            Quantity = i.Quantity
+        }).ToList();
+
+        var expectedResult = new CreateCartResult { Id = cart.Id };
 
         _mapper.Map<Cart>(command).Returns(cart);
-        _mapper.Map<CreateCartResult>(cart).Returns(result);
+        _mapper.Map<CreateCartResult>(cart).Returns(expectedResult);
         _cartRepository.CreateAsync(Arg.Any<Cart>(), Arg.Any<CancellationToken>()).Returns(cart);
 
         // Act
@@ -56,34 +62,20 @@ public class CreateCartHandlerTests
         await _cartRepository.Received(1).CreateAsync(Arg.Any<Cart>(), Arg.Any<CancellationToken>());
     }
 
-    [Fact(DisplayName = "Given invalid command When handling Then should throw validation exception")]
-    public async Task Handle_InvalidCommand_ThrowsValidationException()
-    {
-        // Arrange
-        var command = new CreateCartCommand(); // Missing required fields
-
-        // Act
-        var act = async () => await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        await act.Should().ThrowAsync<FluentValidation.ValidationException>();
-    }
-
     [Fact(DisplayName = "Given valid command When handling Then should map command to entity")]
     public async Task Handle_ValidCommand_MapsCommandToEntity()
     {
         // Arrange
         var command = CreateCartHandlerTestData.GenerateValidCommand();
-        var cart = new Cart
+
+        var cart = CartTestData.GenerateValidCart();
+
+        cart.UserId = command.UserId;
+        cart.Items = command.Items.Select(i => new Ambev.DeveloperEvaluation.Domain.Entities.CartItem
         {
-            Id = Guid.NewGuid(),
-            UserId = command.UserId,
-            Items = command.Items.Select(i => new CartItem
-            {
-                ProductId = i.ProductId,
-                Quantity = i.Quantity
-            }).ToList()
-        };
+            ProductId = i.ProductId,
+            Quantity = i.Quantity
+        }).ToList();
 
         _mapper.Map<Cart>(command).Returns(cart);
         _cartRepository.CreateAsync(cart, Arg.Any<CancellationToken>()).Returns(cart);

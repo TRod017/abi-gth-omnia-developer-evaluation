@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Application.Carts.CreateCart.CartItem;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
 
@@ -12,14 +13,21 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
 /// </remarks>
 public class CreateCartProfile : Profile
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CreateCartProfile"/> class
-    /// and defines the mappings for CreateCart feature.
-    /// </summary>
     public CreateCartProfile()
     {
+        // Mapping from CreateCartItemCommand (input DTO) to CartItem (entity)
+        CreateMap<CreateCartItemCommand, Ambev.DeveloperEvaluation.Domain.Entities.CartItem>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.CartId, opt => opt.Ignore())
+            .ForMember(dest => dest.ProductName, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
+
         // Mapping from CreateCartCommand to Cart (input → entity)
-        CreateMap<CreateCartCommand, Cart>();
+        CreateMap<CreateCartCommand, Cart>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
 
         // Mapping from CartItem (entity) to CreateCartItemResult (output DTO)
         CreateMap<Ambev.DeveloperEvaluation.Domain.Entities.CartItem, CreateCartItemResult>()
