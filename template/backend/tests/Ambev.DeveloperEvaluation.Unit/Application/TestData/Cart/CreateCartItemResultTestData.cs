@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
+using Ambev.DeveloperEvaluation.Application.Carts.GetCart.CartItems;
 using Bogus;
 
 namespace Ambev.DeveloperEvaluation.Unit.Application.TestData.Cart;
