@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart.CartItems;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.UpdateCart;
 
@@ -26,6 +27,10 @@ public class UpdateCartValidator : AbstractValidator<UpdateCartCommand>
         RuleFor(x => x.UserId)
             .NotEmpty()
             .WithMessage("User ID must be provided.");
+
+        RuleFor(x => x.Status)
+           .NotEqual(CartStatus.Unknown)
+           .WithMessage("Status cannot be Unknown.");
 
         RuleForEach(x => x.Items)
             .SetValidator(new UpdateCartItemValidator());

@@ -21,8 +21,17 @@ public class UpdateCartProfile : Profile
     /// </summary>
     public UpdateCartProfile()
     {
-        CreateMap<UpdateCartCommand, Cart>();
-        CreateMap<UpdateCartItemCommand, CartItem>();
+        CreateMap<UpdateCartCommand, Cart>()
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
+
+        CreateMap<UpdateCartItemCommand, CartItem>()
+            .ForMember(dest => dest.CartId, opt => opt.Ignore())
+            .ForMember(dest => dest.ProductName, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+            .ForMember(dest => dest.Id, opt => opt.Ignore());
+
         CreateMap<Cart, UpdateCartResult>();
     }
 }
