@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using Ambev.DeveloperEvaluation.Application.Carts.GetCart;
 using Ambev.DeveloperEvaluation.Application.Carts.GetCart.CartItems;
+using Ambev.DeveloperEvaluation.WebApi.Features.Carts.GetCart;
 
-namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.GetCart;
+namespace Ambev.DeveloperEvaluation.WebApi.Mappings.Carts;
 
 /// <summary>
 /// AutoMapper profile for mapping between application layer results and Web API response models

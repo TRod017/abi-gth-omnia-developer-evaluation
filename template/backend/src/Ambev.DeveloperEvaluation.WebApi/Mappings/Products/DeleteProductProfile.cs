@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Ambev.DeveloperEvaluation.Application.Products.DeleteProduct;
 
-namespace Ambev.DeveloperEvaluation.WebApi.Features.Products.DeleteProduct;
+namespace Ambev.DeveloperEvaluation.WebApi.Mappings.Products;
 
 /// <summary>
 /// AutoMapper profile for mapping between Web API models and application layer models

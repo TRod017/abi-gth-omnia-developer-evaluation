@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using Ambev.DeveloperEvaluation.Application.Users.UpdateUser;
+using Ambev.DeveloperEvaluation.WebApi.Features.Users.UpdateUser;
 
-namespace Ambev.DeveloperEvaluation.WebApi.Features.Users.UpdateUser;
+namespace Ambev.DeveloperEvaluation.WebApi.Mappings.Users;
 
 /// <summary>
 /// AutoMapper profile for mapping between Web API models and application layer models

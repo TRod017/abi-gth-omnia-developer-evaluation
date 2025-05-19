@@ -2,7 +2,7 @@
 using Ambev.DeveloperEvaluation.Application.Products.GetAllProducts;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.GetAllProducts;
 
-namespace Ambev.DeveloperEvaluation.WebApi.Features.Products.GetAllProducts
+namespace Ambev.DeveloperEvaluation.WebApi.Mappings.Products
 {
     /// <summary>
     /// AutoMapper profile for mapping between application layer models and Web API models

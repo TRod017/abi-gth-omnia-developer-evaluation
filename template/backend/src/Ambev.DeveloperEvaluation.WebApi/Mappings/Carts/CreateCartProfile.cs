@@ -2,8 +2,9 @@
 using Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
 using Ambev.DeveloperEvaluation.Application.Carts.CreateCart.CartItem;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.WebApi.Features.Carts.CreateCart;
 
-namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.CreateCart;
+namespace Ambev.DeveloperEvaluation.WebApi.Mappings.Carts;
 
 /// <summary>
 /// AutoMapper profile for mapping between Web API models and application layer models

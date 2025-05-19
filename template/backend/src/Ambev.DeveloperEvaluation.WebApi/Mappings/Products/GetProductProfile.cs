@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using Ambev.DeveloperEvaluation.Application.Products.GetProduct;
+using Ambev.DeveloperEvaluation.WebApi.Features.Products.GetProduct;
 
-namespace Ambev.DeveloperEvaluation.WebApi.Features.Products.GetProduct;
+namespace Ambev.DeveloperEvaluation.WebApi.Mappings.Products;
 
 /// <summary>
 /// AutoMapper profile for mapping between <see cref="GetProductResult"/> (application layer)

@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart;
 using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart.CartItems;
+using Ambev.DeveloperEvaluation.WebApi.Features.Carts.UpdateCart;
 
-namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.UpdateCart;
+namespace Ambev.DeveloperEvaluation.WebApi.Mappings.Carts;
 
 /// <summary>
 /// AutoMapper profile for mapping between Web API models and application layer models

@@ -1,6 +1,6 @@
 using AutoMapper;
 
-namespace Ambev.DeveloperEvaluation.WebApi.Features.Users.DeleteUser;
+namespace Ambev.DeveloperEvaluation.WebApi.Mappings.Users;
 
 /// <summary>
 /// Profile for mapping DeleteUser feature requests to commands

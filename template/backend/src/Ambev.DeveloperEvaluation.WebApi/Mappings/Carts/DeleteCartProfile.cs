@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.DeleteCart;
+namespace Ambev.DeveloperEvaluation.WebApi.Mappings.Carts;
 
 /// <summary>
 /// AutoMapper profile for mapping between Guid and DeleteCartCommand

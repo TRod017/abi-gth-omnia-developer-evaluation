@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
+using Ambev.DeveloperEvaluation.WebApi.Features.Products.UpdateProduct;
 
-namespace Ambev.DeveloperEvaluation.WebApi.Features.Products.UpdateProduct;
+namespace Ambev.DeveloperEvaluation.WebApi.Mappings.Products;
 
 /// <summary>
 /// AutoMapper profile for mapping between Web API models and application layer models

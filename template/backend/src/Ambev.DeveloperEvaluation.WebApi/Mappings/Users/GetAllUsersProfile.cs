@@ -2,7 +2,7 @@
 using Ambev.DeveloperEvaluation.Application.Users.GetAllUsers;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.GetAllUsers;
 
-namespace Ambev.DeveloperEvaluation.WebApi.Features.Users.GetAllUsers;
+namespace Ambev.DeveloperEvaluation.WebApi.Mappings.Users;
 
 /// <summary>
 /// AutoMapper profile for mapping between <see cref="GetAllUsersResult"/> (application layer)
