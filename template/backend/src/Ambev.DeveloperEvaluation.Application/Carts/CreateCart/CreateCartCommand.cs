@@ -1,5 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Common.Validation;
-using MediatR;
+﻿using MediatR;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Application.Carts.CreateCart.CartItem;
 
@@ -30,22 +29,4 @@ public class CreateCartCommand : IRequest<CreateCartResult>
     /// Gets or sets the list of cart items included in the cart.
     /// </summary>
     public List<CreateCartItemCommand> Items { get; set; } = new();
-
-    /// <summary>
-    /// Validates the current command using <see cref="CreateCartValidator"/>.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="ValidationResultDetail"/> containing validation results such as
-    /// success flag and detailed error messages, if any.
-    /// </returns>
-    public ValidationResultDetail Validate()
-    {
-        var validator = new CreateCartValidator();
-        var result = validator.Validate(this);
-        return new ValidationResultDetail
-        {
-            IsValid = result.IsValid,
-            Errors = result.Errors.Select(e => (ValidationErrorDetail)e).ToList()
-        };
-    }
 }

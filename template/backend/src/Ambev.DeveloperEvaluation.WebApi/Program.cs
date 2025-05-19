@@ -1,4 +1,5 @@
 using Ambev.DeveloperEvaluation.Application;
+using Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
 using Ambev.DeveloperEvaluation.Common.HealthChecks;
 using Ambev.DeveloperEvaluation.Common.Logging;
 using Ambev.DeveloperEvaluation.Common.Security;
@@ -6,6 +7,7 @@ using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
+using FluentValidation; // Adicionado para registrar validadores
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -34,7 +36,6 @@ public class Program
                     // Exemplo: CartStatus.Confirmed será lido/escrito como "Confirmed" em vez de 2
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 });
-
 
             builder.Services.AddEndpointsApiExplorer();
 
@@ -100,7 +101,10 @@ public class Program
                 );
             });
 
-            // Pipeline de validação global
+            // Registrar todos os validadores do assembly da camada ApplicationLayer
+            builder.Services.AddValidatorsFromAssembly(typeof(ApplicationLayer).Assembly);
+
+            // Pipeline de validação global do MediatR
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
             var app = builder.Build();

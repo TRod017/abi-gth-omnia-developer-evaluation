@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
-using FluentValidation;
 using Microsoft.Extensions.Logging;
-using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
@@ -11,8 +9,9 @@ namespace Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
 /// Handler responsible for processing <see cref="UpdateProductCommand"/> requests.
 /// </summary>
 /// <remarks>
-/// This handler validates the update command using <see cref="UpdateProductValidator"/>.
-/// retrieves the existing product from the repository, applies updates, and saves the entity.
+/// This handler relies on MediatR's pipeline behavior to automatically perform validation using
+/// registered FluentValidation validators, so explicit validation calls in this handler are removed.
+/// It retrieves the existing product from the repository, applies updates, and persists the entity.
 /// All steps are logged using <see cref="ILogger"/>. Returns <see cref="UpdateProductResult"/> on success,
 /// or null if the product was not found.
 /// </remarks>
@@ -24,7 +23,6 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, Update
 
     // EventIds
     private static readonly EventId StartUpdateEvent = new(3201, nameof(StartUpdateEvent));
-    private static readonly EventId ValidationFailedEvent = new(3202, nameof(ValidationFailedEvent));
     private static readonly EventId ProductNotFoundEvent = new(3203, nameof(ProductNotFoundEvent));
     private static readonly EventId ProductUpdatedEvent = new(3204, nameof(ProductUpdatedEvent));
     private static readonly EventId UnexpectedErrorEvent = new(3299, nameof(UnexpectedErrorEvent));
@@ -35,12 +33,6 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, Update
             LogLevel.Information,
             StartUpdateEvent,
             "Handling UpdateProductCommand for ID: {ProductId}");
-
-    private static readonly Action<ILogger, object, Exception?> LogValidationFailed =
-        LoggerMessage.Define<object>(
-            LogLevel.Warning,
-            ValidationFailedEvent,
-            "Validation failed for UpdateProductCommand. Errors: {@Errors}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogProductNotFound =
         LoggerMessage.Define<Guid>(
@@ -84,15 +76,6 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, Update
         try
         {
             LogStartUpdate(_logger, command.Id, null);
-
-            var validator = new UpdateProductValidator();
-            var validation = await validator.ValidateAsync(command, cancellationToken);
-
-            if (!validation.IsValid)
-            {
-                LogValidationFailed(_logger, validation.Errors, null);
-                throw new ValidationException(validation.Errors);
-            }
 
             var product = await _repository.GetByIdAsync(command.Id, cancellationToken);
 

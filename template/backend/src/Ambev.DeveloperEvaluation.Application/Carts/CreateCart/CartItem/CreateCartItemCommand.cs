@@ -1,5 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Common.Validation;
-using MediatR;
+﻿using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.CreateCart.CartItem;
 
@@ -26,19 +25,4 @@ public class CreateCartItemCommand : IRequest
     /// Gets or sets the unit price of the product at the time it was added to the cart.
     /// </summary>
     public decimal UnitPrice { get; set; }
-
-    /// <summary>
-    /// Validates the command using <see cref="CreateCartItemValidator"/>.
-    /// </summary>
-    /// <returns>A <see cref="ValidationResultDetail"/> containing validation results.</returns>
-    public ValidationResultDetail Validate()
-    {
-        var validator = new CreateCartItemValidator();
-        var result = validator.Validate(this);
-        return new ValidationResultDetail
-        {
-            IsValid = result.IsValid,
-            Errors = result.Errors.Select(e => (ValidationErrorDetail)e).ToList()
-        };
-    }
 }

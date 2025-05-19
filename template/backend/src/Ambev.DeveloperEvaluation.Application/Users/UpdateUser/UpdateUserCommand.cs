@@ -1,5 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Common.Validation;
-using MediatR;
+﻿using MediatR;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 
 namespace Ambev.DeveloperEvaluation.Application.Users.UpdateUser;
@@ -47,22 +46,4 @@ public class UpdateUserCommand : IRequest<UpdateUserResult>
     /// Gets or sets the user's role.
     /// </summary>
     public UserRole Role { get; set; }
-
-    /// <summary>
-    /// Validates the command using <see cref="UpdateUserValidator"/>.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="ValidationResultDetail"/> containing validation results such as
-    /// success flag and detailed error messages, if any.
-    /// </returns>
-    public ValidationResultDetail Validate()
-    {
-        var validator = new UpdateUserValidator();
-        var result = validator.Validate(this);
-        return new ValidationResultDetail
-        {
-            IsValid = result.IsValid,
-            Errors = result.Errors.Select(e => (ValidationErrorDetail)e).ToList()
-        };
-    }
 }

@@ -1,5 +1,4 @@
 using MediatR;
-using FluentValidation;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -15,7 +14,6 @@ public class DeleteUserHandler : IRequestHandler<DeleteUserCommand, DeleteUserRe
 
     // EventIds
     private static readonly EventId StartDeleteEvent = new(1201, nameof(StartDeleteEvent));
-    private static readonly EventId ValidationFailedEvent = new(1202, nameof(ValidationFailedEvent));
     private static readonly EventId NotFoundEvent = new(1203, nameof(NotFoundEvent));
     private static readonly EventId DeletedSuccessEvent = new(1204, nameof(DeletedSuccessEvent));
 
@@ -39,15 +37,6 @@ public class DeleteUserHandler : IRequestHandler<DeleteUserCommand, DeleteUserRe
     public async Task<DeleteUserResponse> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation(StartDeleteEvent, "Handling DeleteUserCommand for ID: {UserId}", request.Id);
-
-        var validator = new DeleteUserValidator();
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            _logger.LogWarning(ValidationFailedEvent, "Validation failed for DeleteUserCommand: {Errors}", validationResult.Errors);
-            throw new ValidationException(validationResult.Errors);
-        }
 
         var success = await _userRepository.DeleteAsync(request.Id, cancellationToken);
         if (!success)

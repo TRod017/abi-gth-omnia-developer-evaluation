@@ -1,5 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Common.Validation;
-using MediatR;
+﻿using MediatR;
 using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart.CartItems;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 
@@ -33,22 +32,4 @@ public class UpdateCartCommand : IRequest<UpdateCartResult>
     /// Gets or sets the current status of the cart (e.g., Open, Confirmed).
     /// </summary>
     public CartStatus Status { get; set; }
-
-    /// <summary>
-    /// Validates the command using <see cref="UpdateCartValidator"/>.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="ValidationResultDetail"/> containing validation results such as
-    /// success flag and detailed error messages, if any.
-    /// </returns>
-    public ValidationResultDetail Validate()
-    {
-        var validator = new UpdateCartValidator();
-        var result = validator.Validate(this);
-        return new ValidationResultDetail
-        {
-            IsValid = result.IsValid,
-            Errors = result.Errors.Select(e => (ValidationErrorDetail)e).ToList()
-        };
-    }
 }

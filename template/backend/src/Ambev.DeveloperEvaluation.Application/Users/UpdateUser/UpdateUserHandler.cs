@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
@@ -10,8 +9,7 @@ namespace Ambev.DeveloperEvaluation.Application.Users.UpdateUser;
 /// Handler responsible for processing <see cref="UpdateUserCommand"/> requests.
 /// </summary>
 /// <remarks>
-/// This handler validates the update command using <see cref="UpdateUserValidator"/>.
-/// It retrieves the existing user from the repository, applies updates using <see cref="IMapper"/>.
+/// This handler retrieves the existing user from the repository, applies updates using <see cref="IMapper"/>.
 /// Persists the changes, and logs each step using <see cref="ILogger"/>. 
 /// Returns <see cref="UpdateUserResult"/> upon successful update or throws exceptions in case of errors.
 /// </remarks>
@@ -23,7 +21,6 @@ public class UpdateUserHandler : IRequestHandler<UpdateUserCommand, UpdateUserRe
 
     // EventIds
     private static readonly EventId StartUpdateEvent = new(3401, nameof(StartUpdateEvent));
-    private static readonly EventId ValidationFailedEvent = new(3402, nameof(ValidationFailedEvent));
     private static readonly EventId UserNotFoundEvent = new(3403, nameof(UserNotFoundEvent));
     private static readonly EventId UserUpdatedEvent = new(3404, nameof(UserUpdatedEvent));
     private static readonly EventId UnexpectedErrorEvent = new(3499, nameof(UnexpectedErrorEvent));
@@ -34,12 +31,6 @@ public class UpdateUserHandler : IRequestHandler<UpdateUserCommand, UpdateUserRe
             LogLevel.Information,
             StartUpdateEvent,
             "Handling UpdateUserCommand for ID: {UserId}");
-
-    private static readonly Action<ILogger, object, Exception?> LogValidationFailed =
-        LoggerMessage.Define<object>(
-            LogLevel.Warning,
-            ValidationFailedEvent,
-            "Validation failed for UpdateUserCommand. Errors: {@Errors}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogUserNotFound =
         LoggerMessage.Define<Guid>(
@@ -83,15 +74,6 @@ public class UpdateUserHandler : IRequestHandler<UpdateUserCommand, UpdateUserRe
         try
         {
             LogStartUpdate(_logger, command.Id, null);
-
-            var validator = new UpdateUserValidator();
-            var validation = await validator.ValidateAsync(command, cancellationToken);
-
-            if (!validation.IsValid)
-            {
-                LogValidationFailed(_logger, validation.Errors, null);
-                throw new ValidationException(validation.Errors);
-            }
 
             var user = await _repository.GetByIdAsync(command.Id, cancellationToken);
 

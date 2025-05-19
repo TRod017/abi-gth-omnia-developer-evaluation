@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 
@@ -9,10 +8,10 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.DeleteCart;
 /// Handler responsible for processing <see cref="DeleteCartCommand"/> requests.
 /// </summary>
 /// <remarks>
-/// This handler validates the incoming delete command using <see cref="DeleteCartValidator"/>.
-/// attempts to delete the cart from the repository using <see cref="ICartRepository"/>.
-/// and logs the operation using <see cref="ILogger"/>. Returns <c>true</c> if the deletion is successful.
+/// This handler attempts to delete the cart from the repository using <see cref="ICartRepository"/>.
+/// and logs the operation using <see cref="ILogger"/>. Returns <c>true</c> if the deletion is successful,
 /// or <c>false</c> if the cart was not found.
+/// Validation is handled by MediatR pipeline behavior.
 /// </remarks>
 public class DeleteCartHandler : IRequestHandler<DeleteCartCommand, bool>
 {
@@ -21,7 +20,6 @@ public class DeleteCartHandler : IRequestHandler<DeleteCartCommand, bool>
 
     // EventIds
     private static readonly EventId DeletingCartEvent = new(1101, nameof(DeletingCartEvent));
-    private static readonly EventId ValidationFailedEvent = new(1140, nameof(ValidationFailedEvent));
     private static readonly EventId CartDeletedEvent = new(1102, nameof(CartDeletedEvent));
     private static readonly EventId CartNotFoundEvent = new(1103, nameof(CartNotFoundEvent));
     private static readonly EventId DeleteCartErrorEvent = new(1199, nameof(DeleteCartErrorEvent));
@@ -32,12 +30,6 @@ public class DeleteCartHandler : IRequestHandler<DeleteCartCommand, bool>
             LogLevel.Information,
             DeletingCartEvent,
             "Handling DeleteCartCommand for ID: {CartId}");
-
-    private static readonly Action<ILogger, object, Exception?> LogValidationFailed =
-        LoggerMessage.Define<object>(
-            LogLevel.Warning,
-            ValidationFailedEvent,
-            "Validation failed for DeleteCartCommand. Errors: {@Errors}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogCartDeleted =
         LoggerMessage.Define<Guid>(
@@ -79,15 +71,6 @@ public class DeleteCartHandler : IRequestHandler<DeleteCartCommand, bool>
         try
         {
             LogDeletingCart(_logger, command.Id, null);
-
-            var validator = new DeleteCartValidator();
-            var validation = await validator.ValidateAsync(command, cancellationToken);
-
-            if (!validation.IsValid)
-            {
-                LogValidationFailed(_logger, validation.Errors, null);
-                throw new ValidationException(validation.Errors);
-            }
 
             var deleted = await _repository.DeleteAsync(command.Id, cancellationToken);
 

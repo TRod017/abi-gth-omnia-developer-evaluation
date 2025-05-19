@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using MediatR;
-using FluentValidation;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Common.Security;
@@ -20,17 +19,12 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand, CreateUserRe
 
     // EventIds
     private static readonly EventId StartEvent = new(1001, nameof(StartEvent));
-    private static readonly EventId ValidationFailedEvent = new(1002, nameof(ValidationFailedEvent));
     private static readonly EventId UserExistsEvent = new(1003, nameof(UserExistsEvent));
     private static readonly EventId SuccessEvent = new(1004, nameof(SuccessEvent));
 
     /// <summary>
     /// Initializes a new instance of CreateUserHandler
     /// </summary>
-    /// <param name="userRepository">The user repository</param>
-    /// <param name="mapper">The AutoMapper instance</param>
-    /// <param name="passwordHasher">The password hasher</param>
-    /// <param name="logger">The logger instance</param>
     public CreateUserHandler(IUserRepository userRepository, IMapper mapper, IPasswordHasher passwordHasher, ILogger<CreateUserHandler> logger)
     {
         _userRepository = userRepository;
@@ -42,21 +36,9 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand, CreateUserRe
     /// <summary>
     /// Handles the CreateUserCommand request
     /// </summary>
-    /// <param name="command">The CreateUser command</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The created user details</returns>
     public async Task<CreateUserResult> Handle(CreateUserCommand command, CancellationToken cancellationToken)
     {
         _logger.LogInformation(StartEvent, "Handling CreateUserCommand for email: {Email}", command.Email);
-
-        var validator = new CreateUserCommandValidator();
-        var validationResult = await validator.ValidateAsync(command, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            _logger.LogWarning(ValidationFailedEvent, "Validation failed for CreateUserCommand: {Errors}", validationResult.Errors);
-            throw new ValidationException(validationResult.Errors);
-        }
 
         var existingUser = await _userRepository.GetByEmailAsync(command.Email, cancellationToken);
         if (existingUser != null)

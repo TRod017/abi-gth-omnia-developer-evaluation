@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Entities;
@@ -11,7 +10,8 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
 /// Handler responsible for processing <see cref="CreateCartCommand"/> requests.
 /// </summary>
 /// <remarks>
-/// This handler validates the incoming cart creation command using <see cref="CreateCartValidator"/>.
+/// This handler relies on MediatR's pipeline behavior to automatically perform validation using
+/// registered FluentValidation validators, so explicit validation calls in this handler are removed.
 /// It maps the command to a <see cref="Cart"/> entity using <see cref="IMapper"/>.
 /// Persists it using <see cref="ICartRepository"/>, and logs each step of the operation
 /// using <see cref="ILogger"/>. Returns a <see cref="CreateCartResult"/> upon successful creation.
@@ -25,7 +25,6 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartRe
     private static readonly EventId HandlingEvent = new(1001, nameof(CreateCartHandler));
     private static readonly EventId MappingEvent = new(1002, "Mapping");
     private static readonly EventId PersistenceEvent = new(1003, "Persistence");
-    private static readonly EventId ValidationErrorEvent = new(1400, "ValidationError");
     private static readonly EventId UnhandledExceptionEvent = new(1500, "UnhandledException");
 
     private static readonly Action<ILogger, Guid, Exception?> LogHandling =
@@ -33,12 +32,6 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartRe
             LogLevel.Information,
             HandlingEvent,
             "Handling CreateCartCommand for UserId: {UserId}");
-
-    private static readonly Action<ILogger, object, Exception?> LogValidationFailed =
-        LoggerMessage.Define<object>(
-            LogLevel.Warning,
-            ValidationErrorEvent,
-            "Validation failed for CreateCartCommand. Errors: {@Errors}");
 
     private static readonly Action<ILogger, object, Exception?> LogMapped =
         LoggerMessage.Define<object>(
@@ -80,15 +73,6 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartRe
     public async Task<CreateCartResult> Handle(CreateCartCommand command, CancellationToken cancellationToken)
     {
         LogHandling(_logger, command.UserId, null);
-
-        var validator = new CreateCartValidator();
-        var validation = await validator.ValidateAsync(command, cancellationToken);
-
-        if (!validation.IsValid)
-        {
-            LogValidationFailed(_logger, validation.Errors, null);
-            throw new ValidationException(validation.Errors);
-        }
 
         try
         {

@@ -1,5 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Common.Validation;
-using MediatR;
+﻿using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.GetCart;
 
@@ -31,23 +30,5 @@ public class GetCartCommand : IRequest<GetCartResult>
     public GetCartCommand(Guid id)
     {
         Id = id;
-    }
-
-    /// <summary>
-    /// Validates the command using <see cref="GetCartValidator"/>.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="ValidationResultDetail"/> containing validation results such as
-    /// success flag and detailed error messages, if any.
-    /// </returns>
-    public ValidationResultDetail Validate()
-    {
-        var validator = new GetCartValidator();
-        var result = validator.Validate(this);
-        return new ValidationResultDetail
-        {
-            IsValid = result.IsValid,
-            Errors = result.Errors.Select(e => (ValidationErrorDetail)e)
-        };
     }
 }

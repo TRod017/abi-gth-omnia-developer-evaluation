@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
@@ -10,7 +9,8 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.GetCart;
 /// Handler responsible for processing <see cref="GetCartCommand"/> requests.
 /// </summary>
 /// <remarks>
-/// This handler validates the incoming cart query using <see cref="GetCartValidator"/>.
+/// This handler relies on MediatR's pipeline behavior to automatically perform validation using
+/// registered FluentValidation validators, so explicit validation calls in this handler are removed.
 /// It then attempts to retrieve the cart by its ID using <see cref="ICartRepository"/>.
 /// If found, the cart is mapped to a <see cref="GetCartResult"/> using <see cref="IMapper"/>.
 /// Logs are recorded throughout the process using <see cref="ILogger"/> for observability and diagnostics.
@@ -23,7 +23,6 @@ public class GetCartHandler : IRequestHandler<GetCartCommand, GetCartResult>
 
     // EventIds
     private static readonly EventId FetchingCartEvent = new(3201, nameof(FetchingCartEvent));
-    private static readonly EventId ValidationErrorEvent = new(3202, nameof(ValidationErrorEvent));
     private static readonly EventId CartFoundEvent = new(3203, nameof(CartFoundEvent));
     private static readonly EventId CartNotFoundEvent = new(3204, nameof(CartNotFoundEvent));
     private static readonly EventId GetCartErrorEvent = new(3299, nameof(GetCartErrorEvent));
@@ -34,12 +33,6 @@ public class GetCartHandler : IRequestHandler<GetCartCommand, GetCartResult>
             LogLevel.Information,
             FetchingCartEvent,
             "Handling GetCartCommand for Cart ID: {CartId}");
-
-    private static readonly Action<ILogger, object, Exception?> LogValidationFailed =
-        LoggerMessage.Define<object>(
-            LogLevel.Warning,
-            ValidationErrorEvent,
-            "Validation failed for GetCartCommand. Errors: {@Errors}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogCartFound =
         LoggerMessage.Define<Guid>(
@@ -83,15 +76,6 @@ public class GetCartHandler : IRequestHandler<GetCartCommand, GetCartResult>
         try
         {
             LogFetchingCart(_logger, command.Id, null);
-
-            var validator = new GetCartValidator();
-            var validation = await validator.ValidateAsync(command, cancellationToken);
-
-            if (!validation.IsValid)
-            {
-                LogValidationFailed(_logger, validation.Errors, null);
-                throw new ValidationException(validation.Errors);
-            }
 
             var cart = await _repository.GetByIdAsync(command.Id, cancellationToken);
 

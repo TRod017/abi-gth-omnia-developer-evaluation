@@ -7,15 +7,6 @@ using Ambev.DeveloperEvaluation.Domain.Repositories;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 
-/// <summary>
-/// Handler responsible for processing <see cref="CreateProductCommand"/> requests.
-/// </summary>
-/// <remarks>
-/// This handler validates the incoming product creation command using <see cref="CreateProductValidator"/>,
-/// maps the command to a <see cref="Product"/> entity using <see cref="IMapper"/>,
-/// persists it using <see cref="IProductRepository"/>, and logs each step of the operation
-/// using <see cref="ILogger"/>. Returns a <see cref="CreateProductResult"/> upon successful creation.
-/// </remarks>
 public class CreateProductHandler : IRequestHandler<CreateProductCommand, CreateProductResult>
 {
     private readonly IProductRepository _repository;
@@ -62,15 +53,6 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Create
     public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
         _logStart(_logger, command.Name, null);
-
-        var validator = new CreateProductValidator();
-        var validation = await validator.ValidateAsync(command, cancellationToken);
-
-        if (!validation.IsValid)
-        {
-            _logger.LogWarning(new EventId(2002, nameof(Handle)), "Validation failed for CreateProductCommand. Errors: {@Errors}", validation.Errors);
-            throw new ValidationException(validation.Errors);
-        }
 
         try
         {
