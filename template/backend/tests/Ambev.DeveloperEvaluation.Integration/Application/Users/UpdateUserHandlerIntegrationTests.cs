@@ -53,7 +53,7 @@ public class UpdateUserHandlerIntegrationTests
             Id = Guid.NewGuid(),
             Username = "olduser",
             Email = "old@email.com",
-            Phone = "21999999999",
+            Phone = "+5521999999999",
             Role = UserRole.Customer,
             Status = UserStatus.Active
         };
@@ -67,7 +67,7 @@ public class UpdateUserHandlerIntegrationTests
             Username = "newuser",
             Email = "new@email.com",
             Password = "NewPassword123!",
-            Phone = "21988888888",
+            Phone = "+5521988888888",
             Status = UserStatus.Inactive,
             Role = UserRole.Admin
         };
@@ -83,7 +83,7 @@ public class UpdateUserHandlerIntegrationTests
         Assert.NotNull(updatedUser);
         Assert.Equal("newuser", updatedUser!.Username);
         Assert.Equal("new@email.com", updatedUser.Email);
-        Assert.Equal("21988888888", updatedUser.Phone);
+        Assert.Equal("+5521988888888", updatedUser.Phone);
         Assert.Equal(UserStatus.Inactive, updatedUser.Status);
         Assert.Equal(UserRole.Admin, updatedUser.Role);
     }
@@ -98,13 +98,15 @@ public class UpdateUserHandlerIntegrationTests
             Username = "ghost",
             Email = "ghost@email.com",
             Password = "Ghost123!",
-            Phone = "21000000000",
+            Phone = "+5521000000000",
             Status = UserStatus.Active,
             Role = UserRole.Customer
         };
 
-        // Act & Assert
-        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
-            _mediator.Send(command, CancellationToken.None));
+        // Act
+        var result = await _mediator.Send(command, CancellationToken.None);
+
+        // Assert
+        Assert.Null(result);
     }
 }
