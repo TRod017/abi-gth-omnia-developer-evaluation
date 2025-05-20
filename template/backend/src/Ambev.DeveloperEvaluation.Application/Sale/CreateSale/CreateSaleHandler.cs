@@ -4,7 +4,6 @@ using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-
 namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 
 /// <summary>
@@ -19,7 +18,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 /// </remarks>
 public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleResult>
 {
-    private readonly ISaleRepository _SaleRepo;
+    private readonly ICartRepository _cartRepo;
     private readonly ISaleRepository _saleRepo;
     private readonly IMapper _mapper;
     private readonly ILogger<CreateSaleHandler> _logger;
@@ -56,17 +55,17 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateSaleHandler"/> class.
     /// </summary>
-    /// <param name="SaleRepo">Repository to access Sale data.</param>
+    /// <param name="cartRepo">Repository to access Cart data.</param>
     /// <param name="saleRepo">Repository to persist sale data.</param>
     /// <param name="mapper">AutoMapper instance for object mapping.</param>
     /// <param name="logger">Logger instance for structured logging.</param>
     public CreateSaleHandler(
-        ISaleRepository SaleRepo,
+        ICartRepository cartRepo,
         ISaleRepository saleRepo,
         IMapper mapper,
         ILogger<CreateSaleHandler> logger)
     {
-        _SaleRepo = SaleRepo;
+        _cartRepo = cartRepo;
         _saleRepo = saleRepo;
         _mapper = mapper;
         _logger = logger;
@@ -84,13 +83,13 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
 
         try
         {
-            var Sale = await _SaleRepo.GetByIdAsync(request.CartId);
-            if (Sale is null)
+            var cart = await _cartRepo.GetByIdAsync(request.CartId);
+            if (cart is null)
             {
-                throw new InvalidOperationException("Sale not found");
+                throw new InvalidOperationException("Cart not found");
             }
 
-            var sale = _mapper.Map<Sale>(Sale);
+            var sale = _mapper.Map<Sale>(cart);
 
             /// <summary>
             /// Validates business rules such as quantity limits and discount logic.

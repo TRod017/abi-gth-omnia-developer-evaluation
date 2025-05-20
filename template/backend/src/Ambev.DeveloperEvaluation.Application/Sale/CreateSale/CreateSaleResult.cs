@@ -34,7 +34,7 @@ public class CreateSaleResult
     /// <summary>
     /// Gets or sets the date the sale was created.
     /// </summary>
-    public DateTime Date { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     /// <summary>
     /// Gets or sets the list of items included in the sale.

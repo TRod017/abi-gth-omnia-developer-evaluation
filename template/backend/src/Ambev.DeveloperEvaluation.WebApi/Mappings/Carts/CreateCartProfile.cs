@@ -16,13 +16,13 @@ namespace Ambev.DeveloperEvaluation.WebApi.Mappings.Carts;
 /// - Convert <see cref="CreateCartItemRequest"/> into <see cref="CreateCartItemCommand"/>
 /// - Convert <see cref="CreateCartResult"/> into <see cref="CreateCartResponse"/>
 /// </remarks>
-public class CreateCartProfile : Profile
+public class CreateSaleProfile : Profile
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="CreateCartProfile"/> class
+    /// Initializes a new instance of the <see cref="CreateSaleProfile"/> class
     /// and configures mappings for the CreateCart operation.
     /// </summary>
-    public CreateCartProfile()
+    public CreateSaleProfile()
     {
         CreateMap<CreateCartRequest, CreateCartCommand>();
         CreateMap<CreateCartResult, CreateCartResponse>();

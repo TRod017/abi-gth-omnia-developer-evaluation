@@ -47,9 +47,14 @@ public class Cart : BaseEntity
     }
 
     /// <summary>
+    /// Gets the total amount for the cart before applying discounts.
+    /// </summary>
+    public decimal Total => Items.Sum(i => i.Total);
+
+    /// <summary>
     /// Gets the total amount for the cart after applying discounts to each item.
     /// </summary>
-    public decimal Total => Items.Sum(i => i.TotalWithDiscount);
+    public decimal TotalWithDiscount => Items.Sum(i => i.TotalWithDiscount);
 
     /// <summary>
     /// Checks whether the quantity of a specific item is within the allowed limit.
@@ -71,22 +76,11 @@ public class Cart : BaseEntity
 
         foreach (var item in Items)
         {
-            if (item.Quantity > 20)
-            {
-                errors.Add(new ValidationErrorDetail
-                {
-                    Error = "QuantityLimitExceeded",
-                    Detail = $"O produto '{item.ProductName}' excede o limite de 20 unidades permitidas."
-                });
-            }
+            var result = item.Validate();
 
-            if (item.Quantity < 4 && item.Discount > 0)
+            if (!result.IsValid)
             {
-                errors.Add(new ValidationErrorDetail
-                {
-                    Error = "InvalidDiscount",
-                    Detail = $"O produto '{item.ProductName}' está com desconto, mas a quantidade é inferior a 4."
-                });
+                errors.AddRange(result.Errors);
             }
         }
 
@@ -119,8 +113,7 @@ public class Cart : BaseEntity
     /// <param name="item">The item to validate.</param>
     public void EnsureValidQuantity(CartItem item)
     {
-        if (item.Quantity > 20)
-            throw new DomainException($"Product '{item.ProductName}' exceeds the limit of 20 units per cart.");
+        item.EnsureValidQuantity();
     }
 
     /// <summary>
@@ -131,15 +124,7 @@ public class Cart : BaseEntity
     {
         foreach (var item in Items)
         {
-            if (item.Quantity > 20)
-            {
-                throw new DomainException($"Product '{item.ProductName}' exceeds the limit of 20 units per cart.");
-            }
-
-            if (item.Quantity < 4 && item.Discount > 0)
-            {
-                throw new DomainException($"Product '{item.ProductName}' has a discount, but quantity is below 4.");
-            }
+            item.EnsureBusinessRulesAreMet();
         }
     }
 }

@@ -13,13 +13,13 @@ namespace Ambev.DeveloperEvaluation.WebApi.Mappings.Carts;
 /// - <see cref="GetAllCartsResult"/> and <see cref="GetAllCartsResponse"/>
 /// - <see cref="GetAllCartsRequest"/> and <see cref="GetAllCartsCommand"/>
 /// </remarks>
-public class GetAllCartsProfile : Profile
+public class GetAllSalesProfile : Profile
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="GetAllCartsProfile"/> class
+    /// Initializes a new instance of the <see cref="GetAllSalesProfile"/> class
     /// and configures mappings for the GetAllCarts operation.
     /// </summary>
-    public GetAllCartsProfile()
+    public GetAllSalesProfile()
     {
         // Application → WebApi
         CreateMap<GetAllCartsResult, GetAllCartsResponse>();

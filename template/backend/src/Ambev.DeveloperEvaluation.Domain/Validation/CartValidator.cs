@@ -25,6 +25,14 @@ public class CartValidator : AbstractValidator<Cart>
             .NotEqual(CartStatus.Unknown)
             .WithMessage("Cart status must be a valid value.");
 
+        RuleFor(cart => cart.Items)
+            .NotEmpty()
+            .WithMessage("The cart must contain at least one item.");
+
+        RuleFor(cart => cart.Items)
+            .Must(items => items.Select(i => i.ProductId).Distinct().Count() == items.Count)
+            .WithMessage("The cart contains duplicated products.");
+
         RuleForEach(cart => cart.Items)
             .SetValidator(new CartItemValidator());
     }

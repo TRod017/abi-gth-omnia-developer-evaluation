@@ -23,6 +23,14 @@ public class SaleValidator : AbstractValidator<Sale>
             .NotEmpty()
             .WithMessage("Cart ID must be provided.");
 
+        RuleFor(sale => sale.Items)
+            .NotEmpty()
+            .WithMessage("The sale must contain at least one item.");
+
+        RuleFor(sale => sale.Items)
+            .Must(items => items.Select(i => i.ProductId).Distinct().Count() == items.Count)
+            .WithMessage("The sale contains duplicated products.");
+
         RuleForEach(sale => sale.Items)
             .SetValidator(new SaleItemValidator());
     }
