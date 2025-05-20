@@ -6,6 +6,35 @@
 
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="Application\Product\DeleteProduct\**" />
+	  <Compile Remove="Application\Product\GetAllProducts\**" />
+	  <Compile Remove="Application\Product\GetProduct\**" />
+	  <Compile Remove="Application\Product\UpdateProduct\**" />
+	  <Compile Remove="Application\User\CreateUser\**" />
+	  <Compile Remove="Application\User\DeleteUser\**" />
+	  <Compile Remove="Application\User\GetAllUsers\**" />
+	  <Compile Remove="Application\User\GetUser\**" />
+	  <Compile Remove="Application\User\UpdateUser\**" />
+	  <EmbeddedResource Remove="Application\Product\DeleteProduct\**" />
+	  <EmbeddedResource Remove="Application\Product\GetAllProducts\**" />
+	  <EmbeddedResource Remove="Application\Product\GetProduct\**" />
+	  <EmbeddedResource Remove="Application\Product\UpdateProduct\**" />
+	  <EmbeddedResource Remove="Application\User\CreateUser\**" />
+	  <EmbeddedResource Remove="Application\User\DeleteUser\**" />
+	  <EmbeddedResource Remove="Application\User\GetAllUsers\**" />
+	  <EmbeddedResource Remove="Application\User\GetUser\**" />
+	  <EmbeddedResource Remove="Application\User\UpdateUser\**" />
+	  <None Remove="Application\Product\DeleteProduct\**" />
+	  <None Remove="Application\Product\GetAllProducts\**" />
+	  <None Remove="Application\Product\GetProduct\**" />
+	  <None Remove="Application\Product\UpdateProduct\**" />
+	  <None Remove="Application\User\CreateUser\**" />
+	  <None Remove="Application\User\DeleteUser\**" />
+	  <None Remove="Application\User\GetAllUsers\**" />
+	  <None Remove="Application\User\GetUser\**" />
+	  <None Remove="Application\User\UpdateUser\**" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
