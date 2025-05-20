@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
 
-namespace Ambev.DeveloperEvaluation.Integration.Application.Users.UpdateUser;
+namespace Ambev.DeveloperEvaluation.Integration.Application.Users;
 
 /// <summary>
 /// Integration tests for UpdateUserHandler using EF Core InMemory and FluentValidation.
