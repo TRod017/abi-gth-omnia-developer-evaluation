@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace Ambev.DeveloperEvaluation.Integration.WebApi.Controllers;
+namespace Ambev.DeveloperEvaluation.Functional.Users;
 
 /// <summary>
 /// Placeholder for integration tests of UsersController.

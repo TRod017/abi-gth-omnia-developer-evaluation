@@ -3,7 +3,7 @@ using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.ORM;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Ambev.DeveloperEvaluation.FunctionalTests.Common;
+namespace Ambev.DeveloperEvaluation.Functional.Common.Seeding;
 
 /// <summary>
 /// Provides database seeding methods for functional tests using the in-memory database.

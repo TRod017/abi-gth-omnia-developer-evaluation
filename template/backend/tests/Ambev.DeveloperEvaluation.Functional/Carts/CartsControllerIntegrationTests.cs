@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace Ambev.DeveloperEvaluation.Integration.WebApi.Controllers;
+namespace Ambev.DeveloperEvaluation.Functional.Carts;
 
 /// <summary>
 /// Placeholder for integration tests of CartsController.

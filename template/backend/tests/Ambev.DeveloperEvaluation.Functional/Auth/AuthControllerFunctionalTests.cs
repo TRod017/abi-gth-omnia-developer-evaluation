@@ -1,11 +1,11 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Ambev.DeveloperEvaluation.WebApi;
-using Ambev.DeveloperEvaluation.FunctionalTests.Common;
+using Ambev.DeveloperEvaluation.Functional.Common;
 using Xunit;
 using FluentAssertions;
 
-namespace Ambev.DeveloperEvaluation.FunctionalTests.Auth;
+namespace Ambev.DeveloperEvaluation.Functional.Auth;
 
 /// <summary>
 /// Functional tests for the authentication endpoint (/api/auth).

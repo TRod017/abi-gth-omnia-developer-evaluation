@@ -3,11 +3,11 @@ using System.Net.Http.Json;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Ambev.DeveloperEvaluation.WebApi;
-using Ambev.DeveloperEvaluation.FunctionalTests.Common;
+using Ambev.DeveloperEvaluation.Functional.Common;
 using Xunit;
 using FluentAssertions;
 
-namespace Ambev.DeveloperEvaluation.FunctionalTests.Products;
+namespace Ambev.DeveloperEvaluation.Functional.Products;
 
 /// <summary>
 /// Functional tests for the /api/products endpoints.

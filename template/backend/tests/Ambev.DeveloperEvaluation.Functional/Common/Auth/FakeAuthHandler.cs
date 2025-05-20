@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Ambev.DeveloperEvaluation.FunctionalTests.Common.Auth;
+namespace Ambev.DeveloperEvaluation.Functional.Common.Auth;
 
 /// <summary>
 /// Fake authentication handler used for functional tests.

@@ -1,16 +1,13 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication;
-using Ambev.DeveloperEvaluation.WebApi;
 using Ambev.DeveloperEvaluation.ORM;
-using Ambev.DeveloperEvaluation.FunctionalTests.Common.Auth;
-using Ambev.DeveloperEvaluation.FunctionalTests.Common;
-using System.Linq;
+using Ambev.DeveloperEvaluation.Functional.Common.Auth;
+using Ambev.DeveloperEvaluation.Functional.Common.Seeding;
 
-namespace Ambev.DeveloperEvaluation.FunctionalTests.Common;
+namespace Ambev.DeveloperEvaluation.Functional.Common;
 
 /// <summary>
 /// Custom factory for creating a test server with the application pipeline configured for functional tests.

@@ -32,8 +32,4 @@
     <ProjectReference Include="..\..\src\Ambev.DeveloperEvaluation.WebApi\Ambev.DeveloperEvaluation.WebApi.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Carts\" />
-  </ItemGroup>
-
 </Project>
