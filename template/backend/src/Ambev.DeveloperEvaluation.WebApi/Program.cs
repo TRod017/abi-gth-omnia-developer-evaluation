@@ -77,12 +77,15 @@ public class Program
             builder.AddBasicHealthChecks();
 
             // Banco de dados (PostgreSQL)
-            builder.Services.AddDbContext<DefaultContext>(options =>
-                options.UseNpgsql(
-                    builder.Configuration.GetConnectionString("DefaultConnection"),
-                    b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
-                )
-            );
+            if (!builder.Environment.IsEnvironment("Testing"))
+            {
+                builder.Services.AddDbContext<DefaultContext>(options =>
+                    options.UseNpgsql(
+                        builder.Configuration.GetConnectionString("DefaultConnection"),
+                        b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
+                    )
+                );
+            }
 
             // Autenticação JWT
             builder.Services.AddJwtAuthentication(builder.Configuration);
