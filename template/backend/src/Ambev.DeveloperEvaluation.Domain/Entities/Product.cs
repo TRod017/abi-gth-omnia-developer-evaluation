@@ -1,5 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Validation;
+using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Validation;
+
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
@@ -10,7 +12,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities;
 /// This entity stores basic product information such as name, description,
 /// unit price, and the available stock quantity.
 /// </remarks>
-public class Product
+public class Product : BaseEntity
 {
     /// <summary>
     /// Gets or sets the unique identifier of the product.
