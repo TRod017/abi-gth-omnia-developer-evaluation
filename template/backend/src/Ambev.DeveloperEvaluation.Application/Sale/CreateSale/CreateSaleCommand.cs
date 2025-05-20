@@ -21,9 +21,9 @@ public class CreateSaleCommand : IRequest<CreateSaleResult>
     public Guid UserId { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the Sale used to generate this sale.
+    /// Gets or sets the unique identifier of the cart from which the sale is created.
     /// </summary>
-    public Guid SaleId { get; set; }
+    public Guid CartId { get; set; }
 
     /// <summary>
     /// Gets or sets the list of items included in the sale.

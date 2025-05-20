@@ -15,8 +15,8 @@ public class CreateSaleValidator : AbstractValidator<CreateSaleCommand>
     /// </summary>
     public CreateSaleValidator()
     {
-        RuleFor(x => x.SaleId)
+        RuleFor(x => x.CartId)
             .NotEmpty()
-            .WithMessage("Sale ID must be provided.");
+            .WithMessage("Cart ID must be provided.");
     }
 }

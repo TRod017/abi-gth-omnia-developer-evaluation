@@ -80,11 +80,11 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
     /// <returns>The result of the created sale as <see cref="CreateSaleResult"/>.</returns>
     public async Task<CreateSaleResult> Handle(CreateSaleCommand request, CancellationToken cancellationToken)
     {
-        LogHandling(_logger, request.SaleId, null);
+        LogHandling(_logger, request.CartId, null);
 
         try
         {
-            var Sale = await _SaleRepo.GetByIdAsync(request.SaleId);
+            var Sale = await _SaleRepo.GetByIdAsync(request.CartId);
             if (Sale is null)
             {
                 throw new InvalidOperationException("Sale not found");
@@ -115,7 +115,7 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
         }
         catch (Exception ex)
         {
-            LogUnhandled(_logger, request.SaleId, ex);
+            LogUnhandled(_logger, request.CartId, ex);
             throw;
         }
     }
