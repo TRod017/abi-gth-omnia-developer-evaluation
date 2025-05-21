@@ -121,16 +121,19 @@ public class Program
             // Middleware global para capturar exceções de validação
             app.UseMiddleware<ValidationExceptionMiddleware>();
 
-            if (app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseHttpsRedirection();
+            }
+
             // Usa o middleware para logging configurado via LoggingExtension
             app.UseDefaultLogging();
-
-            app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseBasicHealthChecks();
