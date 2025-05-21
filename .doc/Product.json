@@ -1,0 +1,122 @@
+[
+  {
+    "name": "Skol Pilsen Lata 350ml",
+    "description": "Cerveja Pilsen leve e refrescante",
+    "unitPrice": 2.79,
+    "availableQuantity": 407
+  },
+  {
+    "name": "Brahma Chopp Lata 350ml",
+    "description": "Cerveja do tipo chopp, leve e cremosa",
+    "unitPrice": 2.89,
+    "availableQuantity": 148
+  },
+  {
+    "name": "Budweiser Long Neck 330ml",
+    "description": "Cerveja tipo lager com sabor marcante",
+    "unitPrice": 5.99,
+    "availableQuantity": 499
+  },
+  {
+    "name": "Stella Artois 330ml",
+    "description": "Cerveja Belga Premium com leve amargor",
+    "unitPrice": 6.49,
+    "availableQuantity": 134
+  },
+  {
+    "name": "Corona Extra 355ml",
+    "description": "Cerveja mexicana leve, ideal com limão",
+    "unitPrice": 7.29,
+    "availableQuantity": 277
+  },
+  {
+    "name": "Spaten Puro Malte 350ml",
+    "description": "Cerveja alemã puro malte encorpada",
+    "unitPrice": 3.99,
+    "availableQuantity": 155
+  },
+  {
+    "name": "Colorado Appia 600ml",
+    "description": "Cerveja de trigo com mel e notas frutadas",
+    "unitPrice": 9.99,
+    "availableQuantity": 182
+  },
+  {
+    "name": "Bohemia Puro Malte 350ml",
+    "description": "Cerveja brasileira puro malte equilibrada",
+    "unitPrice": 3.29,
+    "availableQuantity": 451
+  },
+  {
+    "name": "Guaraná Antarctica Lata 350ml",
+    "description": "Refrigerante de guaraná original do Brasil",
+    "unitPrice": 2.99,
+    "availableQuantity": 403
+  },
+  {
+    "name": "Pepsi Lata 350ml",
+    "description": "Refrigerante de cola com sabor marcante",
+    "unitPrice": 2.89,
+    "availableQuantity": 116
+  },
+  {
+    "name": "H2OH! Limão 500ml",
+    "description": "Bebida levemente gaseificada sabor limão",
+    "unitPrice": 3.49,
+    "availableQuantity": 161
+  },
+  {
+    "name": "Pepsi Black 350ml",
+    "description": "Refrigerante de cola zero açúcar",
+    "unitPrice": 2.99,
+    "availableQuantity": 411
+  },
+  {
+    "name": "Do Bem Suco de Laranja 1L",
+    "description": "Suco 100% natural de laranja",
+    "unitPrice": 7.99,
+    "availableQuantity": 225
+  },
+  {
+    "name": "Do Bem Chá Verde com Limão 1L",
+    "description": "Chá natural com toque de limão",
+    "unitPrice": 6.99,
+    "availableQuantity": 295
+  },
+  {
+    "name": "Fusion Energy Drink 250ml",
+    "description": "Bebida energética para o dia a dia",
+    "unitPrice": 5.49,
+    "availableQuantity": 248
+  },
+  {
+    "name": "AMA Água Mineral Sem Gás 500ml",
+    "description": "Água mineral sem gás",
+    "unitPrice": 2.49,
+    "availableQuantity": 173
+  },
+  {
+    "name": "AMA Água Mineral com Gás 500ml",
+    "description": "Água mineral gaseificada",
+    "unitPrice": 2.79,
+    "availableQuantity": 305
+  },
+  {
+    "name": "Gatorade Limão 500ml",
+    "description": "Isotônico sabor limão para hidratação",
+    "unitPrice": 4.99,
+    "availableQuantity": 264
+  },
+  {
+    "name": "Gatorade Laranja 500ml",
+    "description": "Isotônico sabor laranja",
+    "unitPrice": 4.99,
+    "availableQuantity": 469
+  },
+  {
+    "name": "Gatorade Maracujá 500ml",
+    "description": "Isotônico sabor maracujá",
+    "unitPrice": 4.99,
+    "availableQuantity": 217
+  }
+]

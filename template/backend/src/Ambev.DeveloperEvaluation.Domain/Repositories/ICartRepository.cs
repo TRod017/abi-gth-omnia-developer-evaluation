@@ -1,0 +1,55 @@
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using System.Linq;
+
+namespace Ambev.DeveloperEvaluation.Domain.Repositories;
+
+/// <summary>
+/// Repository interface for Cart entity operations
+/// </summary>
+public interface ICartRepository
+{
+    /// <summary>
+    /// Creates a new cart in the repository
+    /// </summary>
+    /// <param name="cart">The cart to create</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The created cart</returns>
+    Task<Cart> CreateAsync(Cart cart, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves a cart by its unique identifier
+    /// </summary>
+    /// <param name="id">The unique identifier of the cart</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The cart if found, null otherwise</returns>
+    Task<Cart?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves all carts
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>A list of carts</returns>
+    Task<IReadOnlyCollection<Cart>> GetAllAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Updates an existing cart in the repository
+    /// </summary>
+    /// <param name="cart">The cart to update</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The updated cart</returns>
+    Task<Cart> UpdateAsync(Cart cart, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Deletes a cart from the repository
+    /// </summary>
+    /// <param name="id">The unique identifier of the cart to delete</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>True if the cart was deleted, false if not found</returns>
+    Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns a queryable collection of carts for read-only operations such as filtering, sorting, and pagination.
+    /// </summary>
+    /// <returns>An <see cref="IQueryable{Cart}"/> that can be used with LINQ for further composition.</returns>
+    IQueryable<Cart> Query();
+}
