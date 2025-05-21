@@ -1,5 +1,4 @@
 using Ambev.DeveloperEvaluation.Application;
-using Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
 using Ambev.DeveloperEvaluation.Common.HealthChecks;
 using Ambev.DeveloperEvaluation.Common.Logging;
 using Ambev.DeveloperEvaluation.Common.Security;
@@ -7,7 +6,8 @@ using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
-using FluentValidation; // Adicionado para registrar validadores
+using Ambev.DeveloperEvaluation.Common.Settings;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -85,6 +85,12 @@ public class Program
                         b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
                     )
                 );
+            }
+
+            // Configuração do MongoSettings para ambientes com Mongo habilitado (Docker e Development)
+            if (builder.Environment.IsEnvironment("Docker") || builder.Environment.IsDevelopment())
+            {
+                builder.Services.Configure<MongoSettings>(builder.Configuration.GetSection("MongoSettings")); // Adicionado para habilitar Mongo no Docker e no Development
             }
 
             // Autenticação JWT

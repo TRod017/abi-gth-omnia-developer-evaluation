@@ -29,7 +29,7 @@ services:
       POSTGRES_USER: developer
       POSTGRES_PASSWORD: ev@luAt10n
     ports:
-      - "5432:5432"
+      - "5433:5432"  # Porta do host alterada para evitar conflito
     restart: unless-stopped
 
   ambev.developerevaluation.nosql:

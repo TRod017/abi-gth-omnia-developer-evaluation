@@ -75,8 +75,8 @@ public class CartRepository : ICartRepository
     public async Task<Cart> UpdateAsync(Cart cart, CancellationToken cancellationToken = default)
     {
         var existingCart = await _context.Carts
-            .Include(c => c.Items)
-            .FirstOrDefaultAsync(c => c.Id == cart.Id, cancellationToken);
+        .Include(c => c.Items)
+        .FirstOrDefaultAsync(c => c.Id == cart.Id, cancellationToken);
 
         if (existingCart == null)
             throw new KeyNotFoundException($"Cart with ID {cart.Id} not found.");
@@ -85,9 +85,35 @@ public class CartRepository : ICartRepository
         existingCart.Status = cart.Status;
         existingCart.UserId = cart.UserId;
 
-        // Atualiza os itens (remoção e adição)
-        _context.CartItems.RemoveRange(existingCart.Items);
-        await _context.CartItems.AddRangeAsync(cart.Items, cancellationToken);
+        // Identifica itens que foram removidos
+        var itemsToRemove = existingCart.Items
+            .Where(existingItem => !cart.Items.Any(newItem => newItem.Id == existingItem.Id))
+            .ToList();
+
+        foreach (var item in itemsToRemove)
+        {
+            _context.CartItems.Remove(item);
+        }
+
+        // Atualiza ou adiciona os itens
+        foreach (var item in cart.Items)
+        {
+            var existingItem = existingCart.Items.FirstOrDefault(i => i.Id == item.Id);
+            if (existingItem != null)
+            {
+                existingItem.ProductId = item.ProductId;
+                existingItem.Quantity = item.Quantity;
+                existingItem.UnitPrice = item.UnitPrice;
+                existingItem.UpdatedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                item.Id = Guid.NewGuid(); // Garante que o item tenha ID
+                item.CartId = existingCart.Id;
+                item.CreatedAt = DateTime.UtcNow;
+                _context.CartItems.Add(item);
+            }
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
         return existingCart;
