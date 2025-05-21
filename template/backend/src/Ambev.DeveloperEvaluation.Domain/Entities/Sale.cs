@@ -1,4 +1,7 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Common;
+﻿using Ambev.DeveloperEvaluation.Common.Validation;
+using Ambev.DeveloperEvaluation.Domain.Common;
+using Ambev.DeveloperEvaluation.Domain.Validation;
+using System.Collections.Generic;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
@@ -60,6 +63,56 @@ public class Sale : BaseEntity
     /// Gets or sets a value indicating whether the sale has been cancelled.
     /// </summary>
     public bool IsCancelled { get; set; }
+
+        /// <summary>
+    /// Validates business rules specific to the cart, such as quantity limits and discount eligibility.
+    /// </summary>
+    /// <returns>A <see cref="ValidationResultDetail"/> containing any rule violations.</returns>
+    public ValidationResultDetail ValidateBusinessRules()
+    {
+        var errors = new List<ValidationErrorDetail>();
+
+        foreach (var item in Items)
+        {
+            var result = item.Validate();
+
+            if (!result.IsValid)
+            {
+                errors.AddRange(result.Errors);
+            }
+        }
+
+        return new ValidationResultDetail
+        {
+            IsValid = errors.Count == 0,
+            Errors = errors
+        };
+    }
+
+    /// <summary>
+    /// Validates the cart entity using <see cref="CartValidator"/>.
+    /// </summary>
+    /// <returns>A validation result detailing any rule violations.</returns>
+    public ValidationResultDetail Validate()
+    {
+        var validator = new SaleValidator();
+        var result = validator.Validate(this);
+        return new ValidationResultDetail
+        {
+            IsValid = result.IsValid,
+            Errors = result.Errors.Select(e => (ValidationErrorDetail)e)
+        };
+    }
+
+    /// <summary>
+    /// Ensures that the quantity of a given item does not exceed business limits.
+    /// Throws <see cref="DomainException"/> if the quantity is invalid.
+    /// </summary>
+    /// <param name="item">The item to validate.</param>
+    public void EnsureValidQuantity(SaleItem item)
+    {
+        item.EnsureValidQuantity();
+    }
 
     /// <summary>
     /// Ensures all business rules related to sale items are respected.

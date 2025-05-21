@@ -2,7 +2,7 @@
 using Xunit;
 using Ambev.DeveloperEvaluation.Application.Carts.DeleteCart;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Carts.DeleteCart;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Carts;
 
 /// <summary>
 /// Unit tests for the <see cref="DeleteCartValidator"/> class.

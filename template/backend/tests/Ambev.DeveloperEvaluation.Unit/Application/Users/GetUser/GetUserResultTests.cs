@@ -1,22 +1,21 @@
 
 using Xunit;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Users.GetUser
+namespace Ambev.DeveloperEvaluation.Unit.Application.Users;
+
+/// <summary>
+/// Placeholder test class for <see cref="GetUserResultTests"/>.
+/// This class exists to reserve space for future implementation of unit tests.
+/// </summary>
+[Trait("Category", "Pending")]
+public class GetUserResultTests
 {
     /// <summary>
-    /// Placeholder test class for <see cref="GetUserResultTests"/>.
-    /// This class exists to reserve space for future implementation of unit tests.
+    /// Placeholder test indicating this class is not yet implemented.
     /// </summary>
-    [Trait("Category", "Pending")]
-    public class GetUserResultTests
+    [Fact(DisplayName = "[PENDING] Tests for GetUserResultTests not yet implemented")]
+    public void NotImplementedYet()
     {
-        /// <summary>
-        /// Placeholder test indicating this class is not yet implemented.
-        /// </summary>
-        [Fact(DisplayName = "[PENDING] Tests for GetUserResultTests not yet implemented")]
-        public void NotImplementedYet()
-        {
-            Assert.True(true); // Placeholder: prevents build/test errors
-        }
+        Assert.True(true); // Placeholder: prevents build/test errors
     }
 }

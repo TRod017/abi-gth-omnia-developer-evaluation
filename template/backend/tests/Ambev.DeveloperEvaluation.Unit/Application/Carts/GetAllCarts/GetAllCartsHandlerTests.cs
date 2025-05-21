@@ -9,7 +9,7 @@ using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Application.Common;
 using Ambev.DeveloperEvaluation.Unit.Application.TestData.Cart;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Carts.GetAllCarts;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Carts;
 
 /// <summary>
 /// Unit tests for the <see cref="GetAllCartsHandler"/> class.

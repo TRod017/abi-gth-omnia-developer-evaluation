@@ -3,7 +3,7 @@ using Ambev.DeveloperEvaluation.Application.Carts.GetAllCarts;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 using Xunit;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Profiles;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Carts;
 
 /// <summary>
 /// Unit tests for the <see cref="GetAllCartsProfile"/> AutoMapper profile.

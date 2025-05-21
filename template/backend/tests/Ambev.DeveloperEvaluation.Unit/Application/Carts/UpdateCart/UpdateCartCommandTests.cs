@@ -4,7 +4,7 @@ using FluentValidation.TestHelper;
 using Xunit;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Carts.UpdateCart;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Carts;
 
 /// <summary>
 /// Unit tests for the <see cref="UpdateCartCommand"/> class.

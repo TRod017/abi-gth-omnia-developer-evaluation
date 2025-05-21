@@ -2,7 +2,7 @@
 using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart;
 using System;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Carts.UpdateCart;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Carts;
 
 /// <summary>
 /// Unit tests for the <see cref="UpdateCartResult"/> class.

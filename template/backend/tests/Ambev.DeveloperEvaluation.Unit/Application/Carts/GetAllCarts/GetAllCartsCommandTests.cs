@@ -1,7 +1,7 @@
 ﻿using Xunit;
 using Ambev.DeveloperEvaluation.Application.Carts.GetAllCarts;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Carts.GetAllCarts;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Carts;
 
 /// <summary>
 /// Unit tests for the <see cref="GetAllCartsCommand"/> class.

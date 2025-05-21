@@ -5,7 +5,7 @@ using Ambev.DeveloperEvaluation.Unit.Application.TestData.Cart;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 using Xunit;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Profiles;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Carts;
 
 /// <summary>
 /// Unit tests for the <see cref="CreateCartProfile"/> AutoMapper profile.

@@ -5,7 +5,7 @@ using Ambev.DeveloperEvaluation.Application.Carts.DeleteCart;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using NSubstitute.ExceptionExtensions;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Carts.DeleteCart;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Carts;
 
 /// <summary>
 /// Unit tests for the <see cref="DeleteCartHandler"/> class.

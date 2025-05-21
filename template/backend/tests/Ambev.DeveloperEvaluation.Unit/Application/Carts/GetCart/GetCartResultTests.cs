@@ -4,7 +4,7 @@ using Ambev.DeveloperEvaluation.Application.Carts.GetCart.CartItem;
 using Ambev.DeveloperEvaluation.Unit.Application.TestData.Cart;
 
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Carts.GetCart;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Carts;
 
 /// <summary>
 /// Unit tests for the <see cref="GetCartResult"/> class.

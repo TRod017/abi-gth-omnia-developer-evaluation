@@ -1,5 +1,4 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart;
-using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart.CartItems;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Unit.Application.TestData.Cart;
@@ -9,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Carts.UpdateCart;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Carts;
 
 /// <summary>
 /// Unit tests for the <see cref="UpdateCartHandler"/> class.
@@ -42,7 +41,7 @@ public class UpdateCartHandlerTests
             Id = command.Id,
             UserId = Guid.NewGuid(),
             Status = Ambev.DeveloperEvaluation.Domain.Enums.CartStatus.Open,
-            Items = new List<CartItem>()
+            Items = new List<Ambev.DeveloperEvaluation.Domain.Entities.CartItem>()
         };
 
         _cartRepository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
@@ -59,7 +58,7 @@ public class UpdateCartHandlerTests
                 cart.Items.Clear();
                 foreach (var i in cmd.Items)
                 {
-                    cart.Items.Add(new CartItem
+                    cart.Items.Add(new Ambev.DeveloperEvaluation.Domain.Entities.CartItem
                     {
                         ProductId = i.ProductId,
                         Quantity = i.Quantity,

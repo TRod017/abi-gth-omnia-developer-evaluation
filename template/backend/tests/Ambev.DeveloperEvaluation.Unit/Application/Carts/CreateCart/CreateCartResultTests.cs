@@ -1,7 +1,7 @@
 ﻿using Xunit;
 using Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Carts.CreateCart;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Carts;
 
 /// <summary>
 /// Unit tests for the <see cref="CreateCartResult"/> class.

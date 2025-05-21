@@ -2,7 +2,7 @@
 using FluentValidation.TestHelper;
 using Xunit;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Carts.CreateCart.CartItem;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Carts.CartItem;
 
 /// <summary>
 /// Unit tests for the <see cref="CreateCartItemValidator"/> class.

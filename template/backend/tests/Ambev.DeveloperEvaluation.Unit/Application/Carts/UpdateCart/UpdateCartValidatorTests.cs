@@ -4,7 +4,7 @@ using Ambev.DeveloperEvaluation.Unit.Application.TestData.Cart;
 using FluentValidation.TestHelper;
 using Xunit;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Carts.UpdateCart;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Carts;
 
 /// <summary>
 /// Unit tests for the <see cref="UpdateCartValidator"/> class.

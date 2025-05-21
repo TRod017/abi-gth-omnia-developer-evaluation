@@ -2,7 +2,7 @@
 using Ambev.DeveloperEvaluation.Application.Carts.GetAllCarts;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application.Carts.GetAllCarts;
+namespace Ambev.DeveloperEvaluation.Unit.Application.Carts;
 
 /// <summary>
 /// Unit tests for the <see cref="GetAllCartsResult"/> class.
