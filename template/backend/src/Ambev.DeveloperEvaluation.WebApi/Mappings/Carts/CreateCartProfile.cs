@@ -3,6 +3,7 @@ using Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
 using Ambev.DeveloperEvaluation.Application.Carts.CreateCart.CartItem;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.WebApi.Features.Carts.CreateCart;
+using Ambev.DeveloperEvaluation.WebApi.Features.Carts.CreateCart.CartItem;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Mappings.Carts;
 
@@ -16,17 +17,21 @@ namespace Ambev.DeveloperEvaluation.WebApi.Mappings.Carts;
 /// - Convert <see cref="CreateCartItemRequest"/> into <see cref="CreateCartItemCommand"/>
 /// - Convert <see cref="CreateCartResult"/> into <see cref="CreateCartResponse"/>
 /// </remarks>
-public class CreateSaleProfile : Profile
+public class CreateCartProfile : Profile
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="CreateSaleProfile"/> class
+    /// Initializes a new instance of the <see cref="CreateCartProfile"/> class
     /// and configures mappings for the CreateCart operation.
     /// </summary>
-    public CreateSaleProfile()
+    public CreateCartProfile()
     {
         CreateMap<CreateCartRequest, CreateCartCommand>();
         CreateMap<CreateCartResult, CreateCartResponse>();
         CreateMap<CreateCartItemRequest, CreateCartItemCommand>();
         CreateMap<CreateCartItemCommand, CartItem>();
+        CreateMap<CreateCartItemResult, CreateCartItemResponse>()
+            .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => src.Discount))
+            .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.Total))
+            .ForMember(dest => dest.TotalWithDiscount, opt => opt.MapFrom(src => src.TotalWithDiscount));
     }
 }

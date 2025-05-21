@@ -36,6 +36,12 @@ public class Sale : BaseEntity
     public ICollection<SaleItem> Items { get; set; } = new List<SaleItem>();
 
     /// <summary>
+    /// Gets or sets the sale number for identification purposes.
+    /// Typically a unique business identifier such as "VEN-0001".
+    /// </summary>
+    public string SaleNumber { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets the total value of the sale before applying discounts.
     /// </summary>
     public decimal Total { get; set; }
@@ -44,6 +50,11 @@ public class Sale : BaseEntity
     /// Gets or sets the total value of the sale after applying discounts.
     /// </summary>
     public decimal TotalWithDiscount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the branch where the sale occurred.
+    /// </summary>
+    public string Branch { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets a value indicating whether the sale has been cancelled.

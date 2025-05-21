@@ -1,9 +1,9 @@
-namespace Ambev.DeveloperEvaluation.Application.Sales.GetSale.SaleItems;
+﻿namespace Ambev.DeveloperEvaluation.Application.Carts.GetAllCarts.CartItem;
 
 /// <summary>
-/// Represents an item in the Sale, including calculated pricing and discount details.
+/// Represents an item in the cart, including calculated pricing and discount details.
 /// </summary>
-public class GetSaleItemResult
+public class GetAllCartstItemResult
 {
     /// <summary>
     /// Gets or sets the unique identifier of the product associated with the item.
@@ -16,12 +16,12 @@ public class GetSaleItemResult
     public string ProductName { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the quantity of the product added to the Sale.
+    /// Gets or sets the quantity of the product added to the cart.
     /// </summary>
     public int Quantity { get; set; }
 
     /// <summary>
-    /// Gets or sets the unit price of the product at the time it was added to the Sale.
+    /// Gets or sets the unit price of the product at the time it was added to the cart.
     /// </summary>
     public decimal UnitPrice { get; set; }
 

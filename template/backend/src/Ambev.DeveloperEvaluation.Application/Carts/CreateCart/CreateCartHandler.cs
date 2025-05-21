@@ -19,6 +19,7 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
 public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartResult>
 {
     private readonly ICartRepository _repository;
+    private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<CreateCartHandler> _logger;
 
@@ -57,9 +58,10 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartRe
     /// <param name="repository">The cart repository for persistence operations.</param>
     /// <param name="mapper">The AutoMapper instance used for object mapping.</param>
     /// <param name="logger">The logger used to log operational steps.</param>
-    public CreateCartHandler(ICartRepository repository, IMapper mapper, ILogger<CreateCartHandler> logger)
+    public CreateCartHandler(ICartRepository repository, IProductRepository productRepository, IMapper mapper, ILogger<CreateCartHandler> logger)
     {
         _repository = repository;
+        _productRepository = productRepository;
         _mapper = mapper;
         _logger = logger;
     }
@@ -76,7 +78,33 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartRe
 
         try
         {
-            var cart = _mapper.Map<Cart>(command);
+            var cart = new Cart
+            {
+                Id = Guid.NewGuid(),
+                UserId = command.UserId,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                Items = new List<Ambev.DeveloperEvaluation.Domain.Entities.CartItem>()
+            };
+
+            foreach (var itemCommand in command.Items)
+            {
+                var product = await _productRepository.GetByIdAsync(itemCommand.ProductId);
+                if (product is null)
+                    throw new InvalidOperationException($"Product not found: {itemCommand.ProductId}");
+
+                var cartItem = new Ambev.DeveloperEvaluation.Domain.Entities.CartItem
+                {
+                    ProductId = product.Id,
+                    ProductName = product.Name,
+                    UnitPrice = product.UnitPrice,
+                    Quantity = itemCommand.Quantity,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                cart.Items.Add(cartItem);
+            }
 
             LogMapped(_logger, cart, null);
 

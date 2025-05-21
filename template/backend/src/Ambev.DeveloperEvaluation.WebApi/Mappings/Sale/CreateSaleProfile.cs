@@ -26,7 +26,7 @@ public class CreateSaleProfile : Profile
     {
         CreateMap<CreateSaleRequest, CreateSaleCommand>();
         CreateMap<CreateSaleResult, CreateSaleResponse>();
-        CreateMap<CreateSaleItemRequest, CreateSaleItemCommand>();
+        CreateMap<Application.Sales.CreateSale.SaleItem.CreateSaleItemResult, CreateSaleItemResponse>();
         CreateMap<CreateSaleItemCommand, SaleItem>();
     }
 }

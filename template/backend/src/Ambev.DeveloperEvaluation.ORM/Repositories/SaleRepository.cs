@@ -92,6 +92,28 @@ public class SaleRepository : ISaleRepository
     }
 
     /// <summary>
+    /// Cancels an existing sale by updating the IsCancelled flag and UpdatedAt timestamp.
+    /// </summary>
+    /// <param name="saleId">The ID of the sale to cancel.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The updated <see cref="Sale"/> instance.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown if the sale is not found.</exception>
+    public async Task<Sale> CancelAsync(Guid saleId, CancellationToken cancellationToken = default)
+    {
+        var sale = await _context.Sales.FirstOrDefaultAsync(s => s.Id == saleId, cancellationToken);
+
+        if (sale == null)
+            throw new KeyNotFoundException($"Sale with ID {saleId} not found.");
+
+        sale.IsCancelled = true;
+        sale.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync(cancellationToken);
+        return sale;
+    }
+
+
+    /// <summary>
     /// Deletes a sale from the repository.
     /// </summary>
     /// <param name="id">The unique identifier of the sale to delete.</param>

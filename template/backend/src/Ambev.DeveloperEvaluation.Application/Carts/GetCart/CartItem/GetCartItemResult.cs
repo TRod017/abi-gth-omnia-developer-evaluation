@@ -1,4 +1,4 @@
-﻿namespace Ambev.DeveloperEvaluation.Application.Carts.GetCart.CartItems;
+﻿namespace Ambev.DeveloperEvaluation.Application.Carts.GetCart.CartItem;
 
 /// <summary>
 /// Represents an item in the cart, including calculated pricing and discount details.
@@ -9,6 +9,11 @@ public class GetCartItemResult
     /// Gets or sets the unique identifier of the product associated with the item.
     /// </summary>
     public Guid ProductId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the product.
+    /// </summary>
+    public string ProductName { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the quantity of the product added to the cart.

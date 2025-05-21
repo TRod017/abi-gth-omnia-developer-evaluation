@@ -1,10 +1,14 @@
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetAllSales;
 
+using Ambev.DeveloperEvaluation.Application.Sales.CreateSale.SaleItem;
+using System;
+
 /// <summary>
 /// Represents a summary view of a Sale in a list returned by the GetAllSales endpoint.
 /// </summary>
 /// <remarks>
-/// Includes essential information such as Sale ID, user ID, status and creation timestamp.
+/// Includes essential information such as Sale ID, user ID, sale number, branch,
+/// cart reference, financial totals, cancellation flag, and sale items.
 /// </remarks>
 public class GetAllSalesResponse
 {
@@ -19,13 +23,47 @@ public class GetAllSalesResponse
     public Guid UserId { get; set; }
 
     /// <summary>
-    /// Gets or sets the current status of the Sale (e.g., Open, Confirmed).
-    /// </summary>
-    public string Status { get; set; } = string.Empty;
-
-    /// <summary>
     /// Gets or sets the date and time the Sale was created.
     /// </summary>
     public DateTime CreatedAt { get; set; }
-}
 
+    /// <summary>
+    /// Gets or sets the date and time when the Sale was last updated, if applicable.
+    /// </summary>
+    public DateTime? UpdatedAt { get; set; }
+
+    /// <summary>
+    /// Gets or sets the branch (filial) where the Sale was made.
+    /// </summary>
+    public string Branch { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the unique sale number.
+    /// </summary>
+    public string SaleNumber { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the total amount before discount.
+    /// </summary>
+    public decimal Total { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total amount after applying discounts.
+    /// </summary>
+    public decimal TotalWithDiscount { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the sale is cancelled.
+    /// </summary>
+    public bool IsCancelled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unique identifier of the Cart used to generate this Sale.
+    /// </summary>
+    public Guid CartId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of items included in the Sale.
+    /// </summary>
+    public List<CreateSaleItemResult> Items { get; set; } = new();
+}

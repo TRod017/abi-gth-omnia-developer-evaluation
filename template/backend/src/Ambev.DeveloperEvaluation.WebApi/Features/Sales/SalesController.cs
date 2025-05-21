@@ -6,14 +6,13 @@ using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetAllSales;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
-using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetAllSales;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
-using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSale;
+using Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 
@@ -180,14 +179,14 @@ public class SalesController : BaseController
     /// <param name="cancellationToken">Token to cancel the request.</param>
     /// <returns>The updated Sale ID or 404 if not found.</returns>
     [HttpPut("{id}")]
-    [ProducesResponseType(typeof(ApiResponseWithData<UpdateSaleResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponseWithData<CancelSaleResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateSaleRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] CancelSaleRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received request to update Sale with ID: {SaleId}", id);
 
         request.Id = id;
-        var validator = new UpdateSaleRequestValidator();
+        var validator = new CancelSaleRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
@@ -196,7 +195,7 @@ public class SalesController : BaseController
             return BadRequest(validationResult.Errors);
         }
 
-        var command = _mapper.Map<UpdateSaleCommand>(request);
+        var command = _mapper.Map<CancelSaleCommand>(request);
         var result = await _mediator.Send(command, cancellationToken);
 
         if (result == null)
@@ -211,13 +210,59 @@ public class SalesController : BaseController
 
         _logger.LogInformation("Sale updated successfully with ID: {SaleId}", result.Id);
 
-        return Ok(new ApiResponseWithData<UpdateSaleResponse>
+        return Ok(new ApiResponseWithData<CancelSaleResponse>
         {
             Success = true,
             Message = "Sale updated successfully",
-            Data = _mapper.Map<UpdateSaleResponse>(result)
+            Data = _mapper.Map<CancelSaleResponse>(result)
         });
     }
+
+    /// <summary>
+    /// Cancels an existing Sale by its ID.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint marks the Sale as cancelled by updating the <c>IsCancelled</c> flag to <c>true</c>.
+    /// It uses a minimal payload — the Sale ID is passed via route and no request body is required.
+    /// This is useful for soft-deleting or invalidating completed Sales without removing them from the system.
+    /// </remarks>
+    /// <param name="id">The ID of the Sale to cancel.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>HTTP 200 if successful, or 404 if not found.</returns>
+    [HttpPut("{id}/cancel")]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Cancel([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Received request to cancel Sale with ID: {SaleId}", id);
+
+        var command = new CancelSaleCommand
+        {
+            Id = id,
+            IsCancelled = true
+        };
+
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (result == null)
+        {
+            _logger.LogWarning("Sale not found to cancel with ID: {SaleId}", id);
+            return NotFound(new ApiResponse
+            {
+                Success = false,
+                Message = $"Sale with ID {id} not found"
+            });
+        }
+
+        _logger.LogInformation("Sale cancelled successfully with ID: {SaleId}", id);
+
+        return Ok(new ApiResponse
+        {
+            Success = true,
+            Message = "Sale cancelled successfully"
+        });
+    }
+
 
     /// <summary>
     /// Deletes a Sale by its ID.

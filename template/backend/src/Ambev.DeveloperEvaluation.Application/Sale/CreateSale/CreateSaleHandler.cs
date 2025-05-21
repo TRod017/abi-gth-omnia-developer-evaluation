@@ -91,6 +91,12 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
 
             var sale = _mapper.Map<Sale>(cart);
 
+            // domínio decide o valor da data e número
+            sale.Branch = request.Branch;
+            sale.SaleNumber = $"VEN-{DateTime.UtcNow:yyyyMMddHHmmss}";
+            sale.CreatedAt = DateTime.UtcNow;
+
+
             /// <summary>
             /// Validates business rules such as quantity limits and discount logic.
             /// Throws DomainException if any rule is violated.

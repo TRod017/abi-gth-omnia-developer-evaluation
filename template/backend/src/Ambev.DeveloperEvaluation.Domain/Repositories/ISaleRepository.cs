@@ -40,6 +40,15 @@ public interface ISaleRepository
     Task<Sale> UpdateAsync(Sale sale, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Cancels an existing sale by setting its IsCancelled flag to true.
+    /// </summary>
+    /// <param name="saleId">The ID of the sale to cancel.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The updated <see cref="Sale"/> with the cancellation applied.</returns>
+    Task<Sale> CancelAsync(Guid saleId, CancellationToken cancellationToken = default);
+
+
+    /// <summary>
     /// Deletes a sale from the repository
     /// </summary>
     /// <param name="id">The unique identifier of the sale to delete</param>

@@ -18,6 +18,7 @@ namespace Ambev.DeveloperEvaluation.Unit.Application.Carts.CreateCart;
 public class CreateCartHandlerTests
 {
     private readonly ICartRepository _cartRepository;
+    private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<CreateCartHandler> _logger;
     private readonly CreateCartHandler _handler;
@@ -25,9 +26,10 @@ public class CreateCartHandlerTests
     public CreateCartHandlerTests()
     {
         _cartRepository = Substitute.For<ICartRepository>();
+        _productRepository = Substitute.For<IProductRepository>();
         _mapper = Substitute.For<IMapper>();
         _logger = Substitute.For<ILogger<CreateCartHandler>>();
-        _handler = new CreateCartHandler(_cartRepository, _mapper, _logger);
+        _handler = new CreateCartHandler(_cartRepository, _productRepository,_mapper, _logger);
     }
 
     [Fact(DisplayName = "Given valid command When handling Then should create cart and return result")]
@@ -38,6 +40,7 @@ public class CreateCartHandlerTests
 
         // Use CartTestData para gerar entidade
         var cart = CartTestData.GenerateValidCart();
+        var product = ProductTestData.GenerateValidProduct();
 
         // Ajusta propriedades para refletir o comando
         cart.UserId = command.UserId;
@@ -51,6 +54,7 @@ public class CreateCartHandlerTests
 
         _mapper.Map<Cart>(command).Returns(cart);
         _mapper.Map<CreateCartResult>(cart).Returns(expectedResult);
+        _productRepository.CreateAsync(Arg.Any<Product>(), Arg.Any<CancellationToken>()).Returns(product);
         _cartRepository.CreateAsync(Arg.Any<Cart>(), Arg.Any<CancellationToken>()).Returns(cart);
 
         // Act
@@ -67,8 +71,10 @@ public class CreateCartHandlerTests
     {
         // Arrange
         var command = CreateCartHandlerTestData.GenerateValidCommand();
+        
 
         var cart = CartTestData.GenerateValidCart();
+        var product = ProductTestData.GenerateValidProduct();
 
         cart.UserId = command.UserId;
         cart.Items = command.Items.Select(i => new Ambev.DeveloperEvaluation.Domain.Entities.CartItem

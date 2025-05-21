@@ -14,6 +14,11 @@ public class GetSaleItemResponse
     public Guid ProductId { get; set; }
 
     /// <summary>
+    /// Gets or sets the name of the product.
+    /// </summary>
+    public string ProductName { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets the quantity of the product added to the Sale.
     /// </summary>
     public int Quantity { get; set; }

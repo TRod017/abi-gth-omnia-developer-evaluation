@@ -2,7 +2,7 @@
 using Ambev.DeveloperEvaluation.Application.Carts.GetCart;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 using Xunit;
-using Ambev.DeveloperEvaluation.Application.Carts.GetCart.CartItems;
+using Ambev.DeveloperEvaluation.Application.Carts.GetCart.CartItem;
 
 namespace Ambev.DeveloperEvaluation.Unit.Application.Profiles;
 

@@ -38,6 +38,36 @@ public class GetSaleResult
     public DateTime? UpdatedAt { get; set; }
 
     /// <summary>
+    /// Gets or sets the branch (filial) where the Sale occurred.
+    /// </summary>
+    public string Branch { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the unique sale number.
+    /// </summary>
+    public string SaleNumber { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the total amount before discount.
+    /// </summary>
+    public decimal Total { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total amount after applying discounts.
+    /// </summary>
+    public decimal TotalWithDiscount { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the sale is cancelled.
+    /// </summary>
+    public bool IsCancelled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ID of the cart that originated this Sale.
+    /// </summary>
+    public Guid CartId { get; set; }
+
+    /// <summary>
     /// Gets or sets the list of items contained in the Sale.
     /// </summary>
     public List<GetSaleItemResult> Items { get; set; } = new();

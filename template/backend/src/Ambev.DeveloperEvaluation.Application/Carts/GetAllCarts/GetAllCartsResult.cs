@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Enums;
+﻿using Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.GetAllCarts;
 
@@ -35,4 +36,9 @@ public class GetAllCartsResult
     /// Gets or sets the date and time when the cart was last updated, if applicable.
     /// </summary>
     public DateTime? UpdatedAt { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of items included in the cart.
+    /// </summary>
+    public List<CreateCartItemResult> Items { get; set; } = new();
 }

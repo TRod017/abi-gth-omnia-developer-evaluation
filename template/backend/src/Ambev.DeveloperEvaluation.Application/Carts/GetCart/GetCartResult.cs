@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Application.Carts.GetCart.CartItems;
+﻿using Ambev.DeveloperEvaluation.Application.Carts.GetCart.CartItem;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.GetCart;
 

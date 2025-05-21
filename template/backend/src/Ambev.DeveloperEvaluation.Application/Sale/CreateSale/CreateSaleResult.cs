@@ -17,6 +17,21 @@ public class CreateSaleResult
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the generated sale number (e.g., VEN-0001).
+    /// </summary>
+    public string SaleNumber { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the unique identifier of the user who made the purchase.
+    /// </summary>
+    public Guid UserId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the branch (filial) where the sale occurred.
+    /// </summary>
+    public string Branch { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets the total value of the sale before applying discounts.
     /// </summary>
     public decimal Total { get; set; }

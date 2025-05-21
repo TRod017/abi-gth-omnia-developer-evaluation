@@ -1,4 +1,4 @@
-﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.GetCart;
+﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.GetAllCarts.CartItem;
 
 /// <summary>
 /// Represents an individual item within the cart returned by the API.
@@ -6,7 +6,7 @@
 /// <remarks>
 /// Includes product ID, quantity, unit price, discount and totals.
 /// </remarks>
-public class GetCartItemResponse
+public class GetAllCartsItemResponse
 {
     /// <summary>
     /// Gets or sets the unique identifier of the product associated with the item.

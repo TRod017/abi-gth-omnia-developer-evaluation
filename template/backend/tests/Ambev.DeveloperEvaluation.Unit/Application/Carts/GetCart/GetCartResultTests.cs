@@ -1,6 +1,6 @@
 ﻿using Xunit;
 using Ambev.DeveloperEvaluation.Application.Carts.GetCart;
-using Ambev.DeveloperEvaluation.Application.Carts.GetCart.CartItems;
+using Ambev.DeveloperEvaluation.Application.Carts.GetCart.CartItem;
 using Ambev.DeveloperEvaluation.Unit.Application.TestData.Cart;
 
 
