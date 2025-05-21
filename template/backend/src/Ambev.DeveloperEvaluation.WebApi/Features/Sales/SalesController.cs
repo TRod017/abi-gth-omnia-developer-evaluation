@@ -13,6 +13,8 @@ using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 using Microsoft.AspNetCore.Authorization;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
+using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 
@@ -181,12 +183,12 @@ public class SalesController : BaseController
     [HttpPut("{id}")]
     [ProducesResponseType(typeof(ApiResponseWithData<CancelSaleResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] CancelSaleRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateSaleRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received request to update Sale with ID: {SaleId}", id);
 
         request.Id = id;
-        var validator = new CancelSaleRequestValidator();
+        var validator = new UpdateSaleRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
@@ -195,7 +197,7 @@ public class SalesController : BaseController
             return BadRequest(validationResult.Errors);
         }
 
-        var command = _mapper.Map<CancelSaleCommand>(request);
+        var command = _mapper.Map<UpdateSaleCommand>(request);
         var result = await _mediator.Send(command, cancellationToken);
 
         if (result == null)
@@ -210,11 +212,11 @@ public class SalesController : BaseController
 
         _logger.LogInformation("Sale updated successfully with ID: {SaleId}", result.Id);
 
-        return Ok(new ApiResponseWithData<CancelSaleResponse>
+        return Ok(new ApiResponseWithData<UpdateSaleResponse>
         {
             Success = true,
             Message = "Sale updated successfully",
-            Data = _mapper.Map<CancelSaleResponse>(result)
+            Data = _mapper.Map<UpdateSaleResponse>(result)
         });
     }
 

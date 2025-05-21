@@ -72,8 +72,8 @@ public class SaleRepository : ISaleRepository
     public async Task<Sale> UpdateAsync(Sale sale, CancellationToken cancellationToken = default)
     {
         var existingSale = await _context.Sales
-            .Include(s => s.Items)
-            .FirstOrDefaultAsync(s => s.Id == sale.Id, cancellationToken);
+        .Include(s => s.Items)
+        .FirstOrDefaultAsync(s => s.Id == sale.Id, cancellationToken);
 
         if (existingSale == null)
             throw new KeyNotFoundException($"Sale with ID {sale.Id} not found.");
@@ -83,9 +83,38 @@ public class SaleRepository : ISaleRepository
         existingSale.Total = sale.Total;
         existingSale.TotalWithDiscount = sale.TotalWithDiscount;
 
-        // Atualiza os itens (remoção e adição)
-        _context.SaleItems.RemoveRange(existingSale.Items);
-        await _context.SaleItems.AddRangeAsync(sale.Items, cancellationToken);
+        // Atualização inteligente dos itens
+        var incomingItems = sale.Items;
+
+        // Remove itens que não estão mais presentes
+        var itemsToRemove = existingSale.Items
+            .Where(existing => !incomingItems.Any(i => i.Id == existing.Id))
+            .ToList();
+
+        _context.SaleItems.RemoveRange(itemsToRemove);
+
+        foreach (var incoming in incomingItems)
+        {
+            var existingItem = existingSale.Items.FirstOrDefault(e => e.Id == incoming.Id);
+
+            if (existingItem != null)
+            {
+                // Atualiza os campos de itens existentes (exceto os calculados)
+                existingItem.ProductId = incoming.ProductId;
+                existingItem.ProductName = incoming.ProductName;
+                existingItem.Quantity = incoming.Quantity;
+                existingItem.UnitPrice = incoming.UnitPrice;
+                existingItem.UpdatedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                // Garante que CreatedAt esteja presente para novos itens
+                incoming.CreatedAt = DateTime.UtcNow;
+
+                // Adiciona novos itens (sem tentar setar campos calculados)
+                existingSale.Items.Add(incoming);
+            }
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
         return existingSale;

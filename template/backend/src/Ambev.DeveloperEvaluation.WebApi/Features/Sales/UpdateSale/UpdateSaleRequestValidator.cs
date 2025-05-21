@@ -23,7 +23,6 @@ public class UpdateSaleRequestValidator : AbstractValidator<UpdateSaleRequest>
     public UpdateSaleRequestValidator()
     {
         RuleFor(x => x.Id).NotEmpty();
-        RuleFor(x => x.Status).NotEmpty();
 
         RuleForEach(x => x.Items).ChildRules(item =>
         {
