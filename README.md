@@ -28,8 +28,8 @@ Certifique-se de estar na branch principal (`main`) para acessar a versão final
 ```bash
 git checkout main
 ```
-
-## Visão Geral <a id="visao-geral"></a>
+<a id="visao-geral"></a>
+## Visão Geral
 
 Este projeto foi desenvolvido como parte de um teste técnico para avaliação de desenvolvedores back-end, com foco na criação de uma API RESTful robusta, bem estruturada, com arquitetura em camadas e validações de regras de negócio baseadas em domínio.
 
@@ -47,8 +47,8 @@ Além da implementação técnica, o desafio avalia critérios como:
 
 O projeto também inclui o módulo de Carrinho de Compras (Carts), adotado como conceito intermediário entre produtos selecionados e vendas finalizadas, conforme premissas assumidas e documentadas abaixo.
 
-
-## Premissas assumidas para o módulo de Carrinho (Carts API)<a id="premissas-assumidas-para-o-modulo-de-carrinho-carts-api"></a>
+<a id="premissas-assumidas-para-o-modulo-de-carrinho-carts-api"></a>
+## Premissas assumidas para o módulo de Carrinho (Carts API)
 
 * Cada carrinho pertence a um cliente (Customer).
 * O carrinho possui vários itens (CartItems).
