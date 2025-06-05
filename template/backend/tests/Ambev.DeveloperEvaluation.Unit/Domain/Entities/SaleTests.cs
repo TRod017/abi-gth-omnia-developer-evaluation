@@ -47,7 +47,7 @@ public class SaleTests
     [Fact(DisplayName = "Sale with item quantity above limit should fail business rules")]
     public void Given_SaleWithItemQuantityAboveLimit_When_Validated_Then_ShouldThrowDomainException()
     {
-        var sale = SaleTestData.GenerateValidSale();
+        var sale = SaleTestData.GenerateActiveValidSale();
         sale.Items.First().Quantity = 21;
 
         var ex = Assert.Throws<DomainException>(() => sale.EnsureBusinessRulesAreMet());

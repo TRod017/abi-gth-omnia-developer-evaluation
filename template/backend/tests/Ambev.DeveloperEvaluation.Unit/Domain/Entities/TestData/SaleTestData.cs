@@ -50,4 +50,16 @@ public static class SaleTestData
         sale.CartId = System.Guid.Empty;
         return sale;
     }
+
+    /// <summary>
+    /// Generates a valid, non-cancelled Sale instance with one valid SaleItem.
+    /// Useful for tests that rely on business rules being enforced.
+    /// </summary>
+    /// <returns>A Sale marked as not cancelled and with valid items.</returns>
+    public static Sale GenerateActiveValidSale()
+    {
+        var sale = GenerateValidSale();
+        sale.IsCancelled = false;
+        return sale;
+    }
 }

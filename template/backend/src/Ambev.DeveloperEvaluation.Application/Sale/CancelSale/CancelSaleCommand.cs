@@ -17,6 +17,11 @@ public class CancelSaleCommand : IRequest<CancelSaleResult>
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the ID of the user requesting the cancellation.
+    /// </summary>
+    public Guid UserId { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the sale is cancelled.
     /// </summary>
     public bool IsCancelled { get; set; } = true;

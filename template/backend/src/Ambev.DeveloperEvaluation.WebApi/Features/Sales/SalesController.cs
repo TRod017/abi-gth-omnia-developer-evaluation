@@ -71,6 +71,8 @@ public class SalesController : BaseController
         }
 
         var command = _mapper.Map<CreateSaleCommand>(request);
+        command.UserId = GetAuthenticatedUserId();
+
         var result = await _mediator.Send(command, cancellationToken);
 
         _logger.LogInformation("Sale created successfully with ID: {SaleId}", result.Id);
@@ -198,6 +200,8 @@ public class SalesController : BaseController
         }
 
         var command = _mapper.Map<UpdateSaleCommand>(request);
+        command.UserId = GetAuthenticatedUserId();
+
         var result = await _mediator.Send(command, cancellationToken);
 
         if (result == null)
@@ -241,7 +245,8 @@ public class SalesController : BaseController
         var command = new CancelSaleCommand
         {
             Id = id,
-            IsCancelled = true
+            IsCancelled = true,
+            UserId = GetAuthenticatedUserId()
         };
 
         var result = await _mediator.Send(command, cancellationToken);

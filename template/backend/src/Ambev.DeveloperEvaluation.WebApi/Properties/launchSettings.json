@@ -43,12 +43,15 @@
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Docker", // ⬅️ ALTERADO para ativar MongoSettings e porta 5433
+        "ASPNETCORE_ENVIRONMENT": "Docker",
         "ASPNETCORE_HTTPS_PORTS": "8081",
         "ASPNETCORE_HTTP_PORTS": "8080"
       },
       "publishAllPorts": true,
       "useSSL": true
+    },
+    "Profile 1": {
+      "commandName": "Project"
     }
   },
   "$schema": "http://json.schemastore.org/launchsettings.json",

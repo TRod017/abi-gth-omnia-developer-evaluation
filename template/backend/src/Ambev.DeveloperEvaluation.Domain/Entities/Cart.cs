@@ -39,6 +39,13 @@ public class Cart : BaseEntity
     public DateTime? UpdatedAt { get; set; }
 
     /// <summary>
+    /// Gets or sets the user who owns this cart.
+    /// This navigation property defines the relationship between the cart and its associated user.
+    /// </summary>
+    public User User { get; set; } = null!;
+
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Cart"/> class.
     /// </summary>
     public Cart()

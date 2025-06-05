@@ -11,6 +11,7 @@ using Serilog.Sinks.SystemConsole.Themes;
 using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
+using Microsoft.Extensions.Hosting;
 
 namespace Ambev.DeveloperEvaluation.Common.Logging
 {
@@ -52,6 +53,18 @@ namespace Ambev.DeveloperEvaluation.Common.Logging
         public static WebApplicationBuilder AddDefaultLogging(this WebApplicationBuilder builder)
         {
             var configuration = builder.Configuration;
+
+            // Pula configuração de MongoDB se estiver em ambiente de testes
+            if (builder.Environment.IsEnvironment("Testing"))
+            {
+                Log.Logger = new LoggerConfiguration()
+                    .WriteTo.Console()
+                    .CreateLogger();
+
+                builder.Host.UseSerilog();
+                builder.Services.AddLogging();
+                return builder;
+            }
 
             // Lê a configuração do MongoDB do appsettings.json
             var mongoSettings = configuration.GetSection("MongoSettings");

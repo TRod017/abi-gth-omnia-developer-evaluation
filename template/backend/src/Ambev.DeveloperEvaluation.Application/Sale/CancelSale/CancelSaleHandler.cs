@@ -2,6 +2,8 @@ using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Specifications.Sale.CancelSale;
+using Ambev.DeveloperEvaluation.Domain.Specifications.Sale.CreateSale; // Specification: importação
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 
@@ -63,11 +65,32 @@ public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleRe
         {
             LogStartCancel(_logger, command.Id, null);
 
-            var cancelledSale = await _repository.CancelAsync(command.Id, cancellationToken);
+            var sale = await _repository.GetByIdAsync(command.Id, cancellationToken);
 
-            LogSaleCancelled(_logger, cancelledSale.Id, null);
+            if (sale == null)
+            {
+                LogSaleNotFound(_logger, command.Id, null);
+                throw new KeyNotFoundException($"Sale with ID {command.Id} not found.");
+            }
 
-            return _mapper.Map<CancelSaleResult>(cancelledSale);
+            // Specification: Ensure sale has not been cancelled before
+            var alreadyCancelledSpec = new SaleCannotBeCancelledTwiceSpecification();
+            if (!alreadyCancelledSpec.IsSatisfiedBy(sale))
+                throw new InvalidOperationException("Sale has already been cancelled.");
+
+            // Specification (optional): Ensure sale belongs to authenticated user (for multi-user scenarios)
+            var ownershipSpec = new SaleMustBeOwnedByUserSpecification(command.UserId);
+            if (!ownershipSpec.IsSatisfiedBy(sale))
+                throw new InvalidOperationException("User does not own this sale.");
+
+            sale.IsCancelled = true;
+            sale.UpdatedAt = DateTime.UtcNow;
+
+            await _repository.UpdateAsync(sale, cancellationToken);
+
+            LogSaleCancelled(_logger, sale.Id, null);
+
+            return _mapper.Map<CancelSaleResult>(sale);
         }
         catch (Exception ex)
         {

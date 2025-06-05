@@ -1,8 +1,13 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Specifications.Sale.CreateSale;
+using Ambev.DeveloperEvaluation.Domain.Specifications.Product.ConfirmSale;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Ambev.DeveloperEvaluation.Domain.Specifications.Product;
+using Ambev.DeveloperEvaluation.Domain.Specifications;
+using Ambev.DeveloperEvaluation.Domain.Specifications.User.CreateUser;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 
@@ -20,6 +25,8 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
 {
     private readonly ICartRepository _cartRepo;
     private readonly ISaleRepository _saleRepo;
+    private readonly IProductRepository _productRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<CreateSaleHandler> _logger;
 
@@ -57,16 +64,21 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
     /// </summary>
     /// <param name="cartRepo">Repository to access Cart data.</param>
     /// <param name="saleRepo">Repository to persist sale data.</param>
+    /// <param name="productRepository">Repository to access Product data.</param>
     /// <param name="mapper">AutoMapper instance for object mapping.</param>
     /// <param name="logger">Logger instance for structured logging.</param>
     public CreateSaleHandler(
         ICartRepository cartRepo,
         ISaleRepository saleRepo,
+        IProductRepository productRepository,
+        IUserRepository userRepository,
         IMapper mapper,
         ILogger<CreateSaleHandler> logger)
     {
         _cartRepo = cartRepo;
         _saleRepo = saleRepo;
+        _productRepository = productRepository;
+        _userRepository = userRepository;
         _mapper = mapper;
         _logger = logger;
     }
@@ -89,6 +101,15 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
                 throw new InvalidOperationException("Cart not found");
             }
 
+            var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
+            if (user is null)
+                throw new InvalidOperationException("User not found");
+
+            SpecificationValidator.Validate(
+                user,
+                (new UserHasConfirmedCartSpecification(), "User must have at least one confirmed cart")
+            );
+
             var sale = _mapper.Map<Sale>(cart);
 
             // domínio decide o valor da data e número
@@ -96,6 +117,36 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
             sale.SaleNumber = $"VEN-{DateTime.UtcNow:yyyyMMddHHmmss}";
             sale.CreatedAt = DateTime.UtcNow;
 
+            // Specification: Ensure sale has items
+            SpecificationValidator.Validate(sale,
+                (new SaleMustHaveItemsSpecification(), "Sale must contain at least one item"));
+
+            // Specification: Ensure sale total is positive
+            SpecificationValidator.Validate(sale,
+                (new SaleTotalMustBePositiveSpecification(), "Sale total must be greater than zero"));
+
+            // Specification (optional): Ensure sale belongs to authenticated user (for multi-user scenarios)
+            SpecificationValidator.Validate(sale,
+                (new SaleMustBeOwnedByUserSpecification(request.UserId), "User does not own the cart/sale"));
+
+            // Validate each product in sale
+            foreach (var item in sale.Items)
+            {
+                var product = await _productRepository.GetByIdAsync(item.ProductId);
+                if (product is null)
+                    throw new InvalidOperationException($"Product not found: {item.ProductId}");
+
+                SpecificationValidator.Validate(
+                    (product, item.Quantity),
+                    (new ProductStockAvailableSpecification(), $"Insufficient stock for product '{product.Name}'")
+                );
+
+                SpecificationValidator.Validate(
+                    product,
+                    (new ProductMustHaveValidPriceSpecification(), $"Product '{product.Name}' must have a valid price")
+                );
+
+            }
 
             /// <summary>
             /// Validates business rules such as quantity limits and discount logic.
