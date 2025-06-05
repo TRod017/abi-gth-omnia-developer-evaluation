@@ -18,6 +18,7 @@ namespace Ambev.DeveloperEvaluation.Unit.Application.Carts;
 public class UpdateCartHandlerTests
 {
     private readonly ICartRepository _cartRepository;
+    private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<UpdateCartHandler> _logger;
     private readonly UpdateCartHandler _handler;
@@ -25,9 +26,10 @@ public class UpdateCartHandlerTests
     public UpdateCartHandlerTests()
     {
         _cartRepository = Substitute.For<ICartRepository>();
+        _productRepository = Substitute.For<IProductRepository>();
         _mapper = Substitute.For<IMapper>();
         _logger = Substitute.For<ILogger<UpdateCartHandler>>();
-        _handler = new UpdateCartHandler(_cartRepository, _mapper, _logger);
+        _handler = new UpdateCartHandler(_cartRepository, _productRepository, _mapper, _logger);
     }
 
     [Fact(DisplayName = "Given existing cart When handling valid command Then should update cart and return result")]
@@ -46,6 +48,15 @@ public class UpdateCartHandlerTests
 
         _cartRepository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(existingCart));
+
+        _productRepository.GetByIdAsync(Arg.Any<Guid>())
+            .Returns(ci => new Product
+            {
+                Id = ci.ArgAt<Guid>(0),
+                Name = "Test Product",
+                AvailableQuantity = 100,
+                UnitPrice = 10
+            });
 
         _mapper.When(m => m.Map(command, existingCart))
             .Do(ci =>

@@ -4,6 +4,7 @@ using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Common.Security;
 using Microsoft.Extensions.Logging;
+using Ambev.DeveloperEvaluation.Domain.Specifications.User.CreateUser; // Specification: importações
 
 namespace Ambev.DeveloperEvaluation.Application.Users.CreateUser;
 
@@ -41,13 +42,31 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand, CreateUserRe
         _logger.LogInformation(StartEvent, "Handling CreateUserCommand for email: {Email}", command.Email);
 
         var existingUser = await _userRepository.GetByEmailAsync(command.Email, cancellationToken);
-        if (existingUser != null)
+
+        var user = _mapper.Map<User>(command);
+
+        // Specification: Ensure email is unique
+        var uniqueEmailSpec = new UniqueEmailSpecification(_userRepository);
+        if (!await uniqueEmailSpec.IsSatisfiedByAsync(user, cancellationToken))
         {
             _logger.LogWarning(UserExistsEvent, "User with email {Email} already exists", command.Email);
             throw new InvalidOperationException($"User with email {command.Email} already exists");
         }
 
-        var user = _mapper.Map<User>(command);
+        // Specification: Ensure email is valid
+        var validEmailSpec = new ValidEmailSpecification();
+        if (!validEmailSpec.IsSatisfiedBy(user))
+            throw new InvalidOperationException("Invalid email format");
+
+        // Specification: Ensure password is strong
+        var strongPasswordSpec = new StrongPasswordSpecification();
+        if (!strongPasswordSpec.IsSatisfiedBy(user))
+            throw new InvalidOperationException("Password does not meet security requirements");
+
+        // Specification: Ensure phone format is valid
+        var phoneFormatSpec = new UserPhoneFormatSpecification();
+        if (!phoneFormatSpec.IsSatisfiedBy(user))
+            throw new InvalidOperationException("Phone number format is invalid");
 
         user.EnsureBusinessRulesAreMet();
 

@@ -2,6 +2,8 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Specifications.Product;
+using Ambev.DeveloperEvaluation.Domain.Specifications;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
 
@@ -86,6 +88,9 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, Update
             }
 
             _mapper.Map(command, product);
+
+            SpecificationValidator.Validate(product,
+                (new ProductMustHaveValidPriceSpecification(), $"Product '{product.Name}' must have a valid price"));
 
             // Validate business rules in domain entity
             product.EnsureBusinessRulesAreMet();

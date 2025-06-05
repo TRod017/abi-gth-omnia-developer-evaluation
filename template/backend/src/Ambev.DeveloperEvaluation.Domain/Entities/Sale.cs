@@ -120,6 +120,10 @@ public class Sale : BaseEntity
     /// </summary>
     public void EnsureBusinessRulesAreMet()
     {
+        if (IsCancelled)
+            throw new DomainException("A cancelled sale cannot be modified.");
+
+
         foreach (var item in Items)
         {
             item.EnsureBusinessRulesAreMet();

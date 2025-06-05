@@ -64,7 +64,7 @@ public class CreateUserHandlerIntegrationTests
             Username = "testuser",
             Password = "StrongPassword123!",
             Email = "test@email.com",
-            Phone = "21999999999",
+            Phone = "+5521999999999",
             Status = UserStatus.Active,
             Role = UserRole.Customer
         };

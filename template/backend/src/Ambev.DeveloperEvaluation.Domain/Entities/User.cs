@@ -78,6 +78,12 @@ public class User : BaseEntity, IUser
     string IUser.Role => Role.ToString();
 
     /// <summary>
+    /// Gets or sets the collection of shopping carts associated with the user.
+    /// Each cart represents a set of items the user intends to purchase or has purchased.
+    /// </summary>
+    public ICollection<Cart> Carts { get; set; } = new List<Cart>();
+
+    /// <summary>
     /// Initializes a new instance of the User class.
     /// </summary>
     public User()

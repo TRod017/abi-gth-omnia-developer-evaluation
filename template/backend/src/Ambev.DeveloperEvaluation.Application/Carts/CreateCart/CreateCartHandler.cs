@@ -3,6 +3,9 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Specifications.Cart;
+using Ambev.DeveloperEvaluation.Domain.Specifications;
+using Ambev.DeveloperEvaluation.Domain.Specifications.Product.ConfirmSale;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
 
@@ -93,6 +96,11 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartRe
                 if (product is null)
                     throw new InvalidOperationException($"Product not found: {itemCommand.ProductId}");
 
+                SpecificationValidator.Validate(
+                    (product, itemCommand.Quantity),
+                    (new ProductStockAvailableSpecification(), $"Insufficient stock for product {product.Name}")
+                );
+
                 var cartItem = new Ambev.DeveloperEvaluation.Domain.Entities.CartItem
                 {
                     ProductId = product.Id,
@@ -107,6 +115,9 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CreateCartRe
             }
 
             LogMapped(_logger, cart, null);
+
+            SpecificationValidator.Validate(cart,
+                (new CartMustHaveItemsSpecification(), "Cart must contain at least one item"));
 
             /// <summary>
             /// Validates business rules such as quantity limits and discount logic.

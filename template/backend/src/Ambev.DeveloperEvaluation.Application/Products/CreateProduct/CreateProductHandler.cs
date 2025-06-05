@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using MediatR;
-using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;

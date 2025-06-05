@@ -2,6 +2,8 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Specifications.Product.ConfirmSale;
+using Ambev.DeveloperEvaluation.Domain.Specifications;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.UpdateCart;
 
@@ -18,6 +20,7 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.UpdateCart;
 public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, UpdateCartResult>
 {
     private readonly ICartRepository _repository;
+    private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<UpdateCartHandler> _logger;
 
@@ -58,9 +61,10 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, UpdateCartRe
     /// <param name="repository">The cart repository instance.</param>
     /// <param name="mapper">The AutoMapper instance.</param>
     /// <param name="logger">The logger instance.</param>
-    public UpdateCartHandler(ICartRepository repository, IMapper mapper, ILogger<UpdateCartHandler> logger)
+    public UpdateCartHandler(ICartRepository repository, IProductRepository productRepository, IMapper mapper, ILogger<UpdateCartHandler> logger)
     {
         _repository = repository;
+        _productRepository = productRepository;
         _mapper = mapper;
         _logger = logger;
     }
@@ -85,6 +89,22 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, UpdateCartRe
             }
 
             _mapper.Map(command, cart);
+
+            // For each item in the cart, fetch the corresponding product from the repository
+            // and validate that there is sufficient stock available using the ProductStockAvailableSpecification.
+            // Throws an exception if the product is not found or if stock is insufficient.
+            foreach (var item in cart.Items)
+            {
+                var product = await _productRepository.GetByIdAsync(item.ProductId);
+                if (product == null)
+                    throw new InvalidOperationException($"Product not found: {item.ProductId}");
+
+                SpecificationValidator.Validate(
+                    (product, item.Quantity),
+                    (new ProductStockAvailableSpecification(), $"Insufficient stock for product {product.Name}")
+                );
+
+            }
 
             /// <summary>
             /// Validates business rules such as quantity limits and discount logic.

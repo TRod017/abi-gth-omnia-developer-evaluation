@@ -33,7 +33,8 @@ namespace Ambev.DeveloperEvaluation.Common.Security
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.Zero,
+                    NameClaimType = "nameid"
                 };
             });
 

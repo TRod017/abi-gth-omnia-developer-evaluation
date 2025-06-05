@@ -34,4 +34,14 @@ public class BaseController : ControllerBase
                 TotalCount = pagedList.TotalCount,
                 Success = true
             });
+
+    protected Guid GetAuthenticatedUserId()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value ?? User.FindFirst("id")?.Value;
+
+        if (!Guid.TryParse(userIdClaim, out var userId))
+            throw new UnauthorizedAccessException("Unable to determine authenticated user.");
+
+        return userId;
+    }
 }

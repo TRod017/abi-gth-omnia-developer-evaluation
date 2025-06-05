@@ -1,8 +1,10 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Common.Behaviors;
 using Ambev.DeveloperEvaluation.Application.Users.UpdateUser;
+using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Integration.Common;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.ORM.Repositories;
 using FluentValidation;
@@ -39,6 +41,8 @@ public class UpdateUserHandlerIntegrationTests
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ILogger<UpdateUserHandler>>(_ => Substitute.For<ILogger<UpdateUserHandler>>());
 
+        services.AddScoped<IPasswordHasher, InlinePasswordHasher>();
+
         _provider = services.BuildServiceProvider();
         _mediator = _provider.GetRequiredService<IMediator>();
         _context = _provider.GetRequiredService<DefaultContext>();
@@ -66,7 +70,7 @@ public class UpdateUserHandlerIntegrationTests
             Id = user.Id,
             Username = "newuser",
             Email = "new@email.com",
-            Password = "NewPassword123!",
+            Password = "NewValid123",
             Phone = "+5521988888888",
             Status = UserStatus.Inactive,
             Role = UserRole.Admin

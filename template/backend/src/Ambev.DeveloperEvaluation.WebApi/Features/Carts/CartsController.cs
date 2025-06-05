@@ -12,7 +12,6 @@ using Ambev.DeveloperEvaluation.Application.Carts.DeleteCart;
 using Ambev.DeveloperEvaluation.Application.Carts.GetAllCarts;
 using Ambev.DeveloperEvaluation.Application.Carts.GetCart;
 using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts;
@@ -70,6 +69,8 @@ public class CartsController : BaseController
         }
 
         var command = _mapper.Map<CreateCartCommand>(request);
+        command.UserId = GetAuthenticatedUserId();
+
         var result = await _mediator.Send(command, cancellationToken);
 
         _logger.LogInformation("Cart created successfully with ID: {CartId}", result.Id);
@@ -197,6 +198,8 @@ public class CartsController : BaseController
         }
 
         var command = _mapper.Map<UpdateCartCommand>(request);
+        command.UserId = GetAuthenticatedUserId();
+
         var result = await _mediator.Send(command, cancellationToken);
 
         if (result == null)

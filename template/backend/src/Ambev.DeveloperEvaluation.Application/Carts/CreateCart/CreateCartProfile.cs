@@ -27,7 +27,8 @@ public class CreateCartProfile : Profile
         CreateMap<CreateCartCommand, Cart>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
-            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
+            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+            .ForMember(dest => dest.User, opt => opt.Ignore());
 
         // Mapping from CartItem (entity) to CreateCartItemResult (output DTO)
         CreateMap<Ambev.DeveloperEvaluation.Domain.Entities.CartItem, CreateCartItemResult>()

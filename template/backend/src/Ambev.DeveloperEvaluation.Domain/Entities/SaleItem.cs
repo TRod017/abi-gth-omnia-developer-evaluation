@@ -107,6 +107,16 @@ public class SaleItem : BaseEntity
     {
         EnsureValidQuantity();
 
+        if (UnitPrice <= 0)
+        {
+            throw new DomainException($"Product '{ProductName}' must have a valid positive price.");
+        }
+
+        if (Quantity <= 0)
+        {
+            throw new DomainException($"Product '{ProductName}' must have a positive quantity.");
+        }
+
         if (Quantity < 4 && Discount > 0)
         {
             throw new DomainException($"Product '{ProductName}' has a discount, but quantity is below 4.");

@@ -45,6 +45,8 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Carts", (string)null);
                 });
 
@@ -239,6 +241,17 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
+            modelBuilder.Entity("Ambev.DeveloperEvaluation.Domain.Entities.Cart", b =>
+                {
+                    b.HasOne("Ambev.DeveloperEvaluation.Domain.Entities.User", "User")
+                        .WithMany("Carts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Ambev.DeveloperEvaluation.Domain.Entities.CartItem", b =>
                 {
                     b.HasOne("Ambev.DeveloperEvaluation.Domain.Entities.Cart", null)
@@ -265,6 +278,11 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
             modelBuilder.Entity("Ambev.DeveloperEvaluation.Domain.Entities.Sale", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Ambev.DeveloperEvaluation.Domain.Entities.User", b =>
+                {
+                    b.Navigation("Carts");
                 });
 #pragma warning restore 612, 618
         }
