@@ -28,7 +28,7 @@ Certifique-se de estar na branch principal (`main`) para acessar a versão final
 ```bash
 git checkout main
 ```
-
+<a id="visao-geral"></a>
 ## Visão Geral
 
 Este projeto foi desenvolvido como parte de um teste técnico para avaliação de desenvolvedores back-end, com foco na criação de uma API RESTful robusta, bem estruturada, com arquitetura em camadas e validações de regras de negócio baseadas em domínio.
