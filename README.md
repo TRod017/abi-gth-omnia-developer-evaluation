@@ -47,6 +47,7 @@ Além da implementação técnica, o desafio avalia critérios como:
 
 O projeto também inclui o módulo de Carrinho de Compras (Carts), adotado como conceito intermediário entre produtos selecionados e vendas finalizadas, conforme premissas assumidas e documentadas abaixo.
 
+<a id="premissas-assumidas-para-o-modulo-de-carrinho-carts-api"></a>
 ## Premissas assumidas para o módulo de Carrinho (Carts API)
 
 * Cada carrinho pertence a um cliente (Customer).
@@ -67,6 +68,7 @@ O projeto também inclui o módulo de Carrinho de Compras (Carts), adotado como 
 * xUnit (testes unitários/integrados)
 * Docker / Docker Compose (opcional)
 
+<a id="regras-de-negocio-vendas"></a>
 ## Regras de Negócio (Vendas)
 
 * Quantidade < 4: sem desconto
@@ -229,6 +231,7 @@ Implementados para:
 
 ---
 
+<a id="observacoes-finais"></a>
 ## Observações Finais
 
 O projeto segue os princípios de Clean Code, DDD, SOLID e DRY.
@@ -243,6 +246,7 @@ Para dúvidas ou considerações, entre em contato com o desenvolvedor.
 
 ---
 
+<a id="repositorio"></a>
 ## Repositório
 
 O código-fonte completo deste projeto está disponível em:
