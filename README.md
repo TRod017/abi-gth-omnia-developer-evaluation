@@ -28,8 +28,8 @@ Certifique-se de estar na branch principal (`main`) para acessar a versão final
 ```bash
 git checkout main
 ```
-<a id="visao-geral"></a>
-## Visão Geral
+
+## Visão Geral <a id="visao-geral"></a>
 
 Este projeto foi desenvolvido como parte de um teste técnico para avaliação de desenvolvedores back-end, com foco na criação de uma API RESTful robusta, bem estruturada, com arquitetura em camadas e validações de regras de negócio baseadas em domínio.
 
@@ -68,8 +68,7 @@ O projeto também inclui o módulo de Carrinho de Compras (Carts), adotado como 
 * xUnit (testes unitários/integrados)
 * Docker / Docker Compose (opcional)
 
-<a id="regras-de-negocio-vendas"></a>
-## Regras de Negócio (Vendas)
+## Regras de Negócio (Vendas)<a id="regras-de-negocio-vendas"></a>
 
 * Quantidade < 4: sem desconto
 * Quantidade de 4 a 9: 10% de desconto
