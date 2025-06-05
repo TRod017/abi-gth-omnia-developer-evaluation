@@ -173,7 +173,17 @@ A API estará disponível em:
 
 ## Testando a API com Postman (modo local)
 
-O projeto acompanha uma coleção Postman com chamadas organizadas por módulo.
+O projeto acompanha uma coleção Postman com chamadas organizadas por módulo, permitindo testar todos os endpoints de forma prática e rápida.
+...
+
+## 📬 Coleção Postman (Importação)
+
+Baixe e importe o arquivo `.postman_collection.json` no seu Postman:
+
+🔗 [Download da coleção Postman](https://github.com/TRod017/abi-gth-omnia-developer-evaluation/blob/main/API%20Ambev%20Completa%20-%20Produtos%2C%20Usu%C3%A1rios%2C%20Carrinhos%20e%20Vendas.postman_collection.json)
+
+> Basta clicar no link acima, salvar o arquivo `.json` e importar no Postman (Arquivo → Importar).
+
 
 ### Ordem sugerida de testes
 
